@@ -1,0 +1,15 @@
+{
+  "name": "toezicht-flattened-form-data-generator",
+  "version": "0.0.1",
+  "description": "Microservice to save submitted submissions to the triple store.",
+  "repository": {
+    "type": "",
+    "url":  ""
+  },
+  "author": "redpencil.io",
+  "license": "MIT",
+  "dependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
