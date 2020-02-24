@@ -1,5 +1,5 @@
 import {app} from 'mu';
-import {getFile} from "./lib/file-helpers";
+import {TurtleFile} from "./lib/turtle-file";
 
 const TEST_FORM_PATH = "/app/util/form-example.ttl";
 
@@ -14,7 +14,9 @@ app.post('/delta', async function (req, res, next) {
     // TODO retrieve the ttl file of the submitted submission. Make sure it is of type `<http://data.lblod.gift/concepts/form-data-file-type>`
 
 
-    const formTTL = await getFile(TEST_FORM_PATH);
+    // const formTTL = await getFile(TEST_FORM_PATH);
+    const form = await new TurtleFile().read(TEST_FORM_PATH);
+    const triples = form.triples;
     debugger;
 
     // TODO parse this ttl file using the RDF lib.
@@ -25,5 +27,5 @@ app.post('/delta', async function (req, res, next) {
 
     // TODO Relate the form data resource to the submission using ?submission prov:generated ?formData
 
-    // TODO Relate the form data resource to the form data TTL file using ?formData prov:hadPrimarySource ?ttlFile
+    // TODO Relate the form data resource to the form data Turtle file using ?formData prov:hadPrimarySource ?ttlFile
 });
