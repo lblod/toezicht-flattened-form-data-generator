@@ -10,3 +10,6 @@
 <http://lblod.data.gift/id/remote-urls/5E539AB6F3D39A0008000001>	<http://www.semanticdesktop.org/ontologies/2007/01/19/nie#url>	"http://www.gemeente-dilbeek.be/first-file.html" .
 <http://lblod.data.gift/id/remote-urls/5E539AC4F3D39A0008000002>	<http://www.semanticdesktop.org/ontologies/2007/01/19/nie#url>	"http://www.gemeente-dilbeek.be/second-file.html" .
 <http://lblod.data.gift/id/remote-urls/5E539ACCF3D39A0008000003>	<http://www.semanticdesktop.org/ontologies/2007/01/19/nie#url>	"http://www.gemeente-dilbeek.be/third-file.html" .
+
+<http://data.lblod.info/forms/meldingsplicht/0711f911-4c75-4097-8cad-616fef08ffcd> <http://lblod.data.gift/vocabularies/besluit/taxRate> <http://lblod.data.gift/id/price/34567887654> .
+<http://lblod.data.gift/id/price/34567887654> <http://schema.org/price> 15.25 .
