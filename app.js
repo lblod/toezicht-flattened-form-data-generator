@@ -2,7 +2,7 @@ require('require-context/register');
 
 import {app} from 'mu';
 import {TurtleFile} from "./lib/turtle-file";
-import {FormData} from "./lib/form-data";
+import {Form} from "./lib/form";
 
 const OLD_URI = "http://data.lblod.info/forms/meldingsplicht/0711f911-4c75-4097-8cad-616fef08ffcd";
 const TEST_FORM_PATH = "/app/util/form-example.ttl";
@@ -21,7 +21,7 @@ app.post('/delta', async function (req, res, next) {
     const submission = await new TurtleFile().read(TEST_FORM_PATH);
 
     // the new form(-data)
-    const form = new FormData(submission);
+    const form = new Form(submission);
 
     form.process();
 
