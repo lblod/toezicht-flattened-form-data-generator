@@ -8,3 +8,5 @@ export const LBLOD_BESLUIT = Namespace("http://lblod.data.gift/vocabularies/besl
 export const RDFS = Namespace("http://www.w3.org/2000/01/rdf-schema#");
 export const SCHEMA = Namespace("http://schema.org/");
 export const EXT = Namespace("http://def.seegrid.csiro.au/isotc211/iso19115/2003/extent#");
+export const MELDING = Namespace("http://lblod.data.gift/vocabularies/automatische-melding/");
+export const PROV = Namespace("http://www.w3.org/ns/prov#");

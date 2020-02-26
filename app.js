@@ -28,11 +28,4 @@ app.post('/delta', async function (req, res, next) {
     // save the new form
     form.insert();
 
-    // TODO map the given submission to the triplets we want to save. !! BE AWARE !! Could contain multiple triples per property
-
-    // TODO Insert a new resource of type melding:FormData with a uuid and all extractors of the mapping above in the same graph as the submission
-
-    // TODO Relate the form data resource to the submission using ?submission prov:generated ?formData
-
-    // TODO Relate the form data resource to the form data Turtle file using ?formData prov:hadPrimarySource ?ttlFile
 });
