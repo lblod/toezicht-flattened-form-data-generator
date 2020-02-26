@@ -7,3 +7,4 @@ export const ELOD = Namespace("http://linkedeconomy.org/ontology#");
 export const LBLOD_BESLUIT = Namespace("http://lblod.data.gift/vocabularies/besluit/");
 export const RDFS = Namespace("http://www.w3.org/2000/01/rdf-schema#");
 export const SCHEMA = Namespace("http://schema.org/");
+export const EXT = Namespace("http://def.seegrid.csiro.au/isotc211/iso19115/2003/extent#");
