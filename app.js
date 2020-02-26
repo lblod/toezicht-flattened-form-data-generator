@@ -1,10 +1,8 @@
-import {Submission} from "./lib/submission";
-
-require('require-context/register');
-
+import flatten from 'lodash.flatten';
 import {app} from 'mu';
-import {TurtleFile} from "./lib/turtle-file";
+import {Submission, SUBMISSION_SENT_STATUS} from "./lib/submission";
 import {Form} from "./lib/form";
+import {ADMS} from "./util/namespaces";
 
 const MOCK_URI = "http://data.lblod.info/forms/meldingsplicht/0711f911-4c75-4097-8cad-616fef08ffcd";
 const TTL_MOCK_LOCATION = "/app/util/form-example.ttl";
@@ -34,12 +32,8 @@ app.get('/delta', async function (req, res, next) {
     return res.status(200);
 });
 
-// TODO work the task correctly, retrieving it and updating the state.
-// TODO find the submission doc/file URI related to the submission following the path `?submission dct:subject ?submittedDocument`
-// TODO retrieve the ttl file of the submitted submission. Make sure it is of type `<http://data.lblod.gift/concepts/form-data-file-type>`
-// TODO process the ttl/submission with real data
+
 app.post('/delta', async function (req, res, next) {
-    // TODO
     const sentSubmissions = getSentSubmissions(req.body);
 
     if (!sentSubmissions.length) {
@@ -57,7 +51,6 @@ app.post('/delta', async function (req, res, next) {
                 try {
                     let form = new Form(submission);
                     form.process();
-                    form.insert();
                 } catch (e) {
                     console.log("something went wrong while processing submission")
                 }
@@ -72,3 +65,13 @@ app.post('/delta', async function (req, res, next) {
     }
     return res.status(200).send({ data: sentSubmissions });
 });
+
+function getSentSubmissions(delta) {
+    const inserts = flatten(delta.map(changeSet => changeSet.inserts));
+    return inserts.filter(isTriggerTriple).map(t => t.subject.value);
+}
+
+function isTriggerTriple(triple) {
+    return triple.predicate === ADMS('status').value
+        && triple.object.value === SUBMISSION_SENT_STATUS;
+}

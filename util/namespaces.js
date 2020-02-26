@@ -10,3 +10,4 @@ export const SCHEMA = Namespace("http://schema.org/");
 export const EXT = Namespace("http://def.seegrid.csiro.au/isotc211/iso19115/2003/extent#");
 export const MELDING = Namespace("http://lblod.data.gift/vocabularies/automatische-melding/");
 export const PROV = Namespace("http://www.w3.org/ns/prov#");
+export const ADMS = Namespace("http://www.w3.org/ns/adms#");
