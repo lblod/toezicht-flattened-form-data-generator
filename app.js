@@ -5,7 +5,7 @@ import {Form} from "./lib/form";
 import {ADMS} from "./util/namespaces";
 
 const MOCK_URI = "http://data.lblod.info/forms/meldingsplicht/0711f911-4c75-4097-8cad-616fef08ffcd";
-const TTL_MOCK_LOCATION = "/app/util/form-example.ttl";
+const TTL_MOCK_LOCATION = "/app/resources/c2361940-549f-11ea-8a41-713ef8cb6beb.ttl";
 
 app.get('/', function (req, res) {
     res.send('Hello toezicht-flattened-form-data-generator');

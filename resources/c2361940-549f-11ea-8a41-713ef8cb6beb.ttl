@@ -1,0 +1,31 @@
+<http://data.aarschot.be/besluitenlijsten/fd7be360-e049-11e9-8062-a3515a413ddd> a <https://data.vlaanderen.be/id/concept/BesluitDocumentType/3fa67785-ffdc-4b30-8880-2b99d97b4dee> .
+<http://data.aarschot.be/besluitenlijsten/fd7be360-e049-11e9-8062-a3515a413ddd> <http://data.europa.eu/eli/ontology#passed_by> <http://data.lblod.info/id/bestuursorganen/16116d1a184e3815ad11a5da3260a3608ce6b046459eee9d5594449c6a8b535a> .
+<http://data.aarschot.be/besluitenlijsten/fd7be360-e049-11e9-8062-a3515a413ddd> <http://purl.org/dc/terms/type> <https://data.vlaanderen.be/id/concept/BesluitDocumentType/3fa67785-ffdc-4b30-8880-2b99d97b4dee> .
+<http://data.aarschot.be/besluitenlijsten/fd7be360-e049-11e9-8062-a3515a413ddd> <http://data.europa.eu/eli/ontology#date_publication> """2019-03-12"""^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://data.lblod.info/id/zittingen/64e51f37-7b50-48b8-85a0-48bc402ac86f> a <http://data.vlaanderen.be/ns/besluit#Zitting> .
+<http://data.lblod.info/id/zittingen/64e51f37-7b50-48b8-85a0-48bc402ac86f> <http://data.vlaanderen.be/ns/besluit#heeftBesluitenlijst> <http://data.aarschot.be/besluitenlijsten/fd7be360-e049-11e9-8062-a3515a413ddd> .
+<http://data.aarschot.be/besluitenlijsten/fd7be360-e049-11e9-8062-a3515a413ddd> a <http://xmlns.com/foaf/0.1/Document> .
+<http://data.lblod.info/id/zittingen/64e51f37-7b50-48b8-85a0-48bc402ac86f> <http://data.vlaanderen.be/ns/besluit#isGehoudenDoor> <http://data.lblod.info/id/bestuursorganen/461ecf93dd98fd8bed412094020ae3398327bfa63d1e970d1703ff2d06147684> .
+<http://data.lblod.info/id/bestuursorganen/461ecf93dd98fd8bed412094020ae3398327bfa63d1e970d1703ff2d06147684> a <http://data.vlaanderen.be/ns/besluit#Bestuursorgaan> .
+<http://data.lblod.info/id/bestuursorganen/461ecf93dd98fd8bed412094020ae3398327bfa63d1e970d1703ff2d06147684> <http://data.vlaanderen.be/ns/mandaat#isTijdspecialisatieVan> <http://data.lblod.info/id/bestuursorganen/16116d1a184e3815ad11a5da3260a3608ce6b046459eee9d5594449c6a8b535a> .
+<http://data.lblod.info/id/bestuursorganen/16116d1a184e3815ad11a5da3260a3608ce6b046459eee9d5594449c6a8b535a> a <http://data.vlaanderen.be/ns/besluit#Bestuursorgaan> .
+<http://data.lblod.info/id/bestuursorganen/16116d1a184e3815ad11a5da3260a3608ce6b046459eee9d5594449c6a8b535a> <http://www.w3.org/2004/02/skos/core#prefLabel> """Gemeenteraad Aarschot""" .
+<http://data.lblod.info/id/zittingen/64e51f37-7b50-48b8-85a0-48bc402ac86f> <http://data.vlaanderen.be/ns/besluit#geplandeStart> """2019-04-13T12:00:00.000Z"""^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://data.lblod.info/id/zittingen/64e51f37-7b50-48b8-85a0-48bc402ac86f> <http://www.w3.org/ns/prov#startedAtTime> """2019-04-13T12:13:00.000Z"""^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://data.lblod.info/id/besluiten/a6eda67a-01d8-403c-b84d-0988645f726c> a <http://data.vlaanderen.be/ns/besluit#Besluit> .
+<http://data.lblod.info/id/besluiten/a6eda67a-01d8-403c-b84d-0988645f726c> <http://data.europa.eu/eli/ontology#title> """Geef titel besluit 234""" .
+<http://data.lblod.info/id/besluiten/a6eda67a-01d8-403c-b84d-0988645f726c> <http://data.europa.eu/eli/ontology#description> """Amai dat is hier nogal een korte beschrijving""" .
+<http://data.lblod.info/id/besluiten/dc6b96a9-833f-4432-a841-1d858cdf174a> a <http://data.vlaanderen.be/ns/besluit#Besluit> .
+<http://data.lblod.info/id/besluiten/dc6b96a9-833f-4432-a841-1d858cdf174a> <http://data.europa.eu/eli/ontology#title> """Geef titel besluit op345""" .
+<http://data.lblod.info/id/besluiten/dc6b96a9-833f-4432-a841-1d858cdf174a> <http://data.europa.eu/eli/ontology#description> """
+                              Dit is zelfs geen openbaar punt.  En dat mag gewoon een beschrijving hebben.
+                            """ .
+<http://data.lblod.info/id/besluiten/ddafa966-cb90-4461-82e2-04593056dbdb> a <http://data.vlaanderen.be/ns/besluit#Besluit> .
+<http://data.lblod.info/id/besluiten/ddafa966-cb90-4461-82e2-04593056dbdb> <http://data.europa.eu/eli/ontology#title> """Geef titel besluit op456""" .
+<http://data.lblod.info/id/besluiten/ddafa966-cb90-4461-82e2-04593056dbdb> <http://data.europa.eu/eli/ontology#description> """
+                              Geef korte beschrijving op
+                            """ .
+<http://data.aarschot.be/besluitenlijsten/fd7be360-e049-11e9-8062-a3515a413ddd> <http://purl.org/dc/terms/hasPart> <http://data.lblod.info/id/remote-data-objects/c0d0e3f0-549f-11ea-b907-2b835fb3b59f> .
+<http://data.lblod.info/id/zittingen/64e51f37-7b50-48b8-85a0-48bc402ac86f> <http://data.vlaanderen.be/ns/besluit#behandelt> <http://data.lblod.info/id/agendapunten/0104de65-3135-4a3d-bd86-ce4d64890f38> .
+<http://data.lblod.info/id/behandeling-van-agendapunten/c5a0d39c-0e4b-4fda-8af8-e5eacdfb8226> <http://purl.org/dc/terms/subject> <http://data.lblod.info/id/agendapunten/0104de65-3135-4a3d-bd86-ce4d64890f38> .
+<http://data.lblod.info/id/behandeling-van-agendapunten/c5a0d39c-0e4b-4fda-8af8-e5eacdfb8226> <http://www.w3.org/ns/prov#generated> <http://data.lblod.info/id/besluiten/ddafa966-cb90-4461-82e2-04593056dbdb> .
