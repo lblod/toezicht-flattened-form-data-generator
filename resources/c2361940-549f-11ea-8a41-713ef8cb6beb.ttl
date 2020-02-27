@@ -28,4 +28,4 @@
 <http://data.aarschot.be/besluitenlijsten/fd7be360-e049-11e9-8062-a3515a413ddd> <http://purl.org/dc/terms/hasPart> <http://data.lblod.info/id/remote-data-objects/c0d0e3f0-549f-11ea-b907-2b835fb3b59f> .
 <http://data.lblod.info/id/zittingen/64e51f37-7b50-48b8-85a0-48bc402ac86f> <http://data.vlaanderen.be/ns/besluit#behandelt> <http://data.lblod.info/id/agendapunten/0104de65-3135-4a3d-bd86-ce4d64890f38> .
 <http://data.lblod.info/id/behandeling-van-agendapunten/c5a0d39c-0e4b-4fda-8af8-e5eacdfb8226> <http://purl.org/dc/terms/subject> <http://data.lblod.info/id/agendapunten/0104de65-3135-4a3d-bd86-ce4d64890f38> .
-<http://data.lblod.info/id/behandeling-van-agendapunten/c5a0d39c-0e4b-4fda-8af8-e5eacdfb8226> <http://www.w3.org/ns/prov#generated> <http://data.lblod.info/id/besluiten/ddafa966-cb90-4461-82e2-04593056dbdb> .
+<http://data.lblod.info/id/behandeling-van-agendapunten/c5a0d39c-0e4b-4fda-8af8-e5eacdfb8226> <http://www.w3.org/ns/prov#generated> <http://data.aarschot.be/besluitenlijsten/fd7be360-e049-11e9-8062-a3515a413ddd> .
