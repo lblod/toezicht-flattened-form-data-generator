@@ -1,10 +1,11 @@
 import flatten from 'lodash.flatten';
 import {app} from 'mu';
 import {Submission, SUBMISSION_SENT_STATUS} from "./lib/submission";
-import {Form} from "./lib/form";
+import {FormData} from "./lib/form-data";
 import {ADMS} from "./util/namespaces";
 
-const MOCK_URI = "http://data.lblod.info/forms/meldingsplicht/0711f911-4c75-4097-8cad-616fef08ffcd";
+const MOCK_SUBMISSION_URI = "http://data.lblod.info/forms/meldingsplicht/0711f911-4c75-4097-8cad-616fef08ffcd";
+const MOCK_SUBMISSION_DOCUMENT_URI = "http://data.aarschot.be/besluitenlijsten/fd7be360-e049-11e9-8062-a3515a413ddd";
 const TTL_MOCK_LOCATION = "/app/resources/c2361940-549f-11ea-8a41-713ef8cb6beb.ttl";
 
 app.get('/', function (req, res) {
@@ -15,12 +16,13 @@ app.get('/', function (req, res) {
 app.get('/delta', async function (req, res, next) {
 
     const submission = await new Submission({
-        uri: MOCK_URI,
+        uri: MOCK_SUBMISSION_URI,
+        subject: MOCK_SUBMISSION_DOCUMENT_URI,
         ttlPath: TTL_MOCK_LOCATION
     }).load();
 
     // we create a form with the needed properties
-    const form = new Form({submission});
+    const form = new FormData({submission});
 
     // we process the form, extracting the properties
     form.process();
@@ -49,7 +51,7 @@ app.post('/delta', async function (req, res, next) {
 
             const handleSubmission = async () => {
                 try {
-                    let form = new Form(submission);
+                    let form = new FormData(submission);
                     form.process();
                 } catch (e) {
                     console.log("something went wrong while processing submission")
