@@ -12,3 +12,4 @@ export const EXT = Namespace("http://def.seegrid.csiro.au/isotc211/iso19115/2003
 export const MELDING = Namespace("http://lblod.data.gift/vocabularies/automatische-melding/");
 export const PROV = Namespace("http://www.w3.org/ns/prov#");
 export const ADMS = Namespace("http://www.w3.org/ns/adms#");
+export const XSD = Namespace("http://www.w3.org/2001/XMLSchema#");
