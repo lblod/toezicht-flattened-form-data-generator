@@ -29,3 +29,7 @@
 <http://data.lblod.info/id/zittingen/64e51f37-7b50-48b8-85a0-48bc402ac86f> <http://data.vlaanderen.be/ns/besluit#behandelt> <http://data.lblod.info/id/agendapunten/0104de65-3135-4a3d-bd86-ce4d64890f38> .
 <http://data.lblod.info/id/behandeling-van-agendapunten/c5a0d39c-0e4b-4fda-8af8-e5eacdfb8226> <http://purl.org/dc/terms/subject> <http://data.lblod.info/id/agendapunten/0104de65-3135-4a3d-bd86-ce4d64890f38> .
 <http://data.lblod.info/id/behandeling-van-agendapunten/c5a0d39c-0e4b-4fda-8af8-e5eacdfb8226> <http://www.w3.org/ns/prov#generated> <http://data.aarschot.be/besluitenlijsten/fd7be360-e049-11e9-8062-a3515a413ddd> .
+
+<http://data.aarschot.be/besluitenlijsten/fd7be360-e049-11e9-8062-a3515a413ddd> <http://lblod.data.gift/vocabularies/besluit/taxRate> <http://lblod.data.gift/id/price/34567887654> .
+<http://lblod.data.gift/id/price/34567887654> <http://schema.org/price> 15.25 .
+<http://lblod.data.gift/id/price/34567887654> <http://schema.org/price> 0.25 .
