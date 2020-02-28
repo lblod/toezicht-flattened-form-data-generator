@@ -16,23 +16,44 @@ app.get('/', function (req, res) {
 // Mock implementation of the form processing
 app.get('/delta', async function (req, res, next) {
 
+    const uri = MOCK_SUBMISSION_URI;
     // retrieve/create the submission
-    const submission = await createSubmissionByURI(MOCK_SUBMISSION_URI);
+    let submission;
+    try {
+        submission = await createSubmissionByURI(uri);
+    } catch (e) {
+        console.log(`Something went wrong while trying to retrieve submission <${uri}>`);
+        console.log(`Exception: ${e}`);
+        return res.status(204).send();
+    }
 
     // we create a form with the needed properties
     const form = new FormData({submission});
 
     // we process the form, extracting the properties
-    form.process();
+    try {
+        form.process();
+    } catch (e) {
+        console.log(`Something went wrong while trying to extract the form-data from submission <${uri}>`);
+        console.log(`Exception: ${e.stack}`);
+        return res.status(204).send();
+    }
 
     // save the form to the triple store
-    form.insert();
+    try {
+        form.insert();
+    } catch (e) {
+        console.log(`Something went wrong while trying to save the form-data from submission <${uri}>, check your database connection?`);
+        console.log(`Exception: ${e.stack}`);
+        return res.status(204).send();
+    }
 
     // finish the call
     return res.status(200);
 });
 
 
+// TODO implement and test the delta flow
 app.post('/delta', async function (req, res, next) {
     const sentSubmissions = getSentSubmissions(req.body);
 
@@ -63,7 +84,7 @@ app.post('/delta', async function (req, res, next) {
             return next(e);
         }
     }
-    return res.status(200).send({ data: sentSubmissions });
+    return res.status(200).send({data: sentSubmissions});
 });
 
 function getSentSubmissions(delta) {
