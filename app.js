@@ -50,7 +50,7 @@ app.get('/delta', async function (req, res, next) {
     }
 
     // finish the call
-    return res.status(200);
+    return res.status(200).send();
 });
 
 
