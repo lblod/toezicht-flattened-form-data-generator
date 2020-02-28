@@ -17,6 +17,7 @@ app.get('/', function (req, res) {
 app.get('/delta', async function (req, res, next) {
 
     const uri = MOCK_SUBMISSION_URI;
+
     // retrieve/create the submission
     let submission;
     try {
@@ -41,7 +42,7 @@ app.get('/delta', async function (req, res, next) {
 
     // save the form to the triple store
     try {
-        form.insert();
+        await form.insert();
     } catch (e) {
         console.log(`Something went wrong while trying to save the form-data from submission <${uri}>, check your database connection?`);
         console.log(`Exception: ${e.stack}`);
