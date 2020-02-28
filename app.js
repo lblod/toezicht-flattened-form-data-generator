@@ -3,6 +3,7 @@ import {app} from 'mu';
 import {Submission, SUBMISSION_SENT_STATUS} from "./lib/submission";
 import {FormData} from "./lib/form-data";
 import {ADMS} from "./util/namespaces";
+import {TurtleFile} from "./lib/turtle-file";
 
 const MOCK_SUBMISSION_URI = "http://data.lblod.info/forms/meldingsplicht/0711f911-4c75-4097-8cad-616fef08ffcd";
 const MOCK_SUBMISSION_DOCUMENT_URI = "http://data.aarschot.be/besluitenlijsten/fd7be360-e049-11e9-8062-a3515a413ddd";
@@ -15,10 +16,13 @@ app.get('/', function (req, res) {
 // Mock implementation of the form processing
 app.get('/delta', async function (req, res, next) {
 
+    // retrieve/create the submission
     const submission = await new Submission({
         uri: MOCK_SUBMISSION_URI,
-        subject: MOCK_SUBMISSION_DOCUMENT_URI,
-        ttlPath: TTL_MOCK_LOCATION
+        submittedDocument: new TurtleFile({
+            uri: MOCK_SUBMISSION_DOCUMENT_URI,
+            location: TTL_MOCK_LOCATION
+        })
     }).load();
 
     // we create a form with the needed properties
