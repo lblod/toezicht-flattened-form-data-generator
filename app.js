@@ -1,6 +1,6 @@
 import flatten from 'lodash.flatten';
 import {app} from 'mu';
-import {Submission, SUBMISSION_SENT_STATUS} from "./lib/submission";
+import {createSubmissionByURI, Submission, SUBMISSION_SENT_STATUS} from "./lib/submission";
 import {FormData} from "./lib/form-data";
 import {ADMS} from "./util/namespaces";
 import {TurtleFile} from "./lib/turtle-file";
@@ -17,13 +17,7 @@ app.get('/', function (req, res) {
 app.get('/delta', async function (req, res, next) {
 
     // retrieve/create the submission
-    const submission = await new Submission({
-        uri: MOCK_SUBMISSION_URI,
-        // submittedDocument: new TurtleFile({
-        //     uri: MOCK_SUBMISSION_DOCUMENT_URI,
-        //     location: TTL_MOCK_LOCATION
-        // })
-    }).load();
+    const submission = await createSubmissionByURI(MOCK_SUBMISSION_URI);
 
     // we create a form with the needed properties
     const form = new FormData({submission});
