@@ -17,7 +17,7 @@ WHERE {
 `
 }
 
-export function insertFormData({uri, uuid, submission, properties}) {
+export function insertFormDataQuery({uri, uuid, submission, properties}) {
    return `
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
@@ -26,7 +26,7 @@ INSERT {
   GRAPH ?g {
     ${sparqlEscapeUri(uri)} a ${sparqlEscapeUri(MELDING('FormData').value)} .
     ${sparqlEscapeUri(uri)} mu:uuid ${sparqlEscapeString(uuid)} .
-    ${(properties.map(property => property.toNT(uri)).join('\n \t'))}
+    ${(properties.map(property => property.toNT(uri)).join('\n\t'))}
     ${sparqlEscapeUri(uri)} ${sparqlEscapeUri(PROV('hadPrimarySource').value)} ${sparqlEscapeUri(submission.ttl.uri)} .
     ${sparqlEscapeUri(submission.uri)} ${sparqlEscapeUri(PROV('generated').value)} ${sparqlEscapeUri(uri)} .
   }

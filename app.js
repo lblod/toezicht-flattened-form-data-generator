@@ -15,9 +15,38 @@ app.get('/', function (req, res) {
 
 // Mock implementation of the form processing
 app.get('/delta', async function (req, res, next) {
-
     const uri = MOCK_SUBMISSION_URI;
+    processSubmission({res, uri});
+});
 
+
+// TODO implement and test the delta flow
+app.post('/delta', async function (req, res, next) {
+    const sentSubmissions = getSentSubmissions(req.body);
+
+    if (!sentSubmissions.length) {
+        console.log("Delta does not contain an submission with status 'verstuurd'. Nothing should happen.");
+        return res.status(204).send();
+    }
+
+    for (let submissionUri of sentSubmissions) {
+        processSubmission({res, uri: submissionUri})
+    }
+
+    return res.status(200).send({data: sentSubmissions});
+});
+
+function getSentSubmissions(delta) {
+    const inserts = flatten(delta.map(changeSet => changeSet.inserts));
+    return inserts.filter(isTriggerTriple).map(t => t.subject.value);
+}
+
+function isTriggerTriple(triple) {
+    return triple.predicate === ADMS('status').value
+        && triple.object.value === SUBMISSION_SENT_STATUS;
+}
+
+async function processSubmission({res, uri}) {
     // retrieve/create the submission
     let submission;
     try {
@@ -51,49 +80,4 @@ app.get('/delta', async function (req, res, next) {
 
     // finish the call
     return res.status(200).send();
-});
-
-
-// TODO implement and test the delta flow
-app.post('/delta', async function (req, res, next) {
-    const sentSubmissions = getSentSubmissions(req.body);
-
-    if (!sentSubmissions.length) {
-        console.log("Delta does not contain an submission with status 'verstuurd'. Nothing should happen.");
-        return res.status(204).send();
-    }
-
-    for (let submissionUri of sentSubmissions) {
-        try {
-            const submission = await new Submission({
-                uri: submissionUri
-            }).load();
-
-            const handleSubmission = async () => {
-                try {
-                    let form = new FormData(submission);
-                    form.process();
-                } catch (e) {
-                    console.log("something went wrong while processing submission")
-                }
-            };
-
-            handleSubmission(); // async processing
-        } catch (e) {
-            console.log(`Something went wrong while handling deltas for automatic submission task ${task}`);
-            console.log(e);
-            return next(e);
-        }
-    }
-    return res.status(200).send({data: sentSubmissions});
-});
-
-function getSentSubmissions(delta) {
-    const inserts = flatten(delta.map(changeSet => changeSet.inserts));
-    return inserts.filter(isTriggerTriple).map(t => t.subject.value);
-}
-
-function isTriggerTriple(triple) {
-    return triple.predicate === ADMS('status').value
-        && triple.object.value === SUBMISSION_SENT_STATUS;
 }
