@@ -5,24 +5,12 @@ import {createSubmissionByURI, SUBMISSION_SENT_STATUS} from "./lib/submission";
 import {FormData} from "./lib/form-data";
 import {ADMS} from "./util/namespaces";
 
-const MOCK_SUBMISSION_URI = "http://data.lblod.info/submissions/5E58DEC8A438D00008000002";
-const MOCK_SUBMISSION_DOCUMENT_URI = "http://data.aarschot.be/besluitenlijsten/fd7be360-e049-11e9-8062-a3515a413ddd";
-const TTL_MOCK_LOCATION = "/app/resources/c2361940-549f-11ea-8a41-713ef8cb6beb.ttl";
-
 app.use(bodyParser.json({ type: function(req) { return /^application\/json/.test(req.get('content-type')); } }));
 
 app.get('/', function (req, res) {
     res.send('Hello toezicht-flattened-form-data-generator');
 });
 
-// Mock implementation of the form processing
-// app.get('/delta', async function (req, res, next) {
-//     const uri = MOCK_SUBMISSION_URI;
-//     processSubmission({res, uri});
-// });
-
-
-// TODO implement and test the delta flow
 app.post('/delta', async function (req, res, next) {
     let sentSubmissions;
     try {
