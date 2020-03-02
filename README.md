@@ -5,7 +5,7 @@ Microservice that listens to the delta notifier and inserts the form data in the
 Add the following snippet to your `docker-compose.yml`:
 
 ```yml
-save-sent-submission:
+toezicht-flattened-form-data-generator:
   image: lblod/toezicht-flattend-form-data-generator
   volumes:
     - ./data/files/submissions:/share/submissions
@@ -29,7 +29,7 @@ export default [
       }
     },
     callback: {
-      url: 'http://save-sent-submission/delta',
+      url: 'http://toezicht-flattened-form-data-generator/delta',
       method: 'POST'
     },
     options: {
