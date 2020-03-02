@@ -9,7 +9,7 @@ import {
 } from 'mu';
 
 const DATE = "http://www.w3.org/2001/XMLSchema#date";
-const DATETIME = "http://www.w3.org/2001/XMLSchema#datetime";
+const DATETIME = "http://www.w3.org/2001/XMLSchema#dateTime";
 // TODO is this correct?
 const BOOL = "http://www.w3.org/2001/XMLSchema#bool";
 const FLOAT = "http://www.w3.org/2001/XMLSchema#decimal";
