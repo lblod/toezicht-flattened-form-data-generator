@@ -7,14 +7,14 @@ import {
     sparqlEscapeDateTime,
     sparqlEscapeBool,
 } from 'mu';
+import {XSD} from "./namespaces";
 
-const DATE = "http://www.w3.org/2001/XMLSchema#date";
-const DATETIME = "http://www.w3.org/2001/XMLSchema#dateTime";
-// TODO is this correct?
-const BOOL = "http://www.w3.org/2001/XMLSchema#bool";
-const FLOAT = "http://www.w3.org/2001/XMLSchema#decimal";
-const INT = "http://www.w3.org/2001/XMLSchema#integer";
-const STRING = "http://www.w3.org/2001/XMLSchema#string";
+const DATE = XSD('date').value;
+const DATETIME = XSD('dateTime').value;
+const BOOL = XSD('boolean').value;
+const FLOAT = XSD('decimal').value;
+const INT = XSD('integer').value;
+const STRING = XSD('string').value;
 
 
 export function sparqlEscapeRDFLibObject(object) {
