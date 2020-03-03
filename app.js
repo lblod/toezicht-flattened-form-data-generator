@@ -1,39 +1,52 @@
 import flatten from 'lodash.flatten';
 import bodyParser from 'body-parser';
 import {app} from 'mu';
-import {createSubmissionByURI, createSubmissionFromSubmissionResource, SUBMISSION_SENT_STATUS} from "./lib/submission";
+import {
+    createSubmissionByURI,
+    createSubmissionFromSubmission,
+    createSubmissionFromSubmissionResource,
+    SUBMISSION_SENT_STATUS
+} from "./lib/submission";
 import {FormData} from "./lib/form-data";
 import {ADMS} from "./util/namespaces";
+import {Delta} from "./lib/delta";
+import {triple} from "rdflib/src/index";
 
-app.use(bodyParser.json({ type: function(req) { return /^application\/json/.test(req.get('content-type')); } }));
+app.use(bodyParser.json({
+    type: function (req) {
+        return /^application\/json/.test(req.get('content-type'));
+    }
+}));
 
 app.get('/', function (req, res) {
     res.send('Hello toezicht-flattened-form-data-generator');
 });
 
-
-// TODO expand this to also extract/process SubmissionTasks
 app.post('/delta', async function (req, res, next) {
-    let sentSubmissions;
-    try {
-        console.log(req.body);
-        sentSubmissions = getSentSubmissions(req.body);
-    }catch(e){
-        console.log("Something went wrong while trying to process the delta notifier request.");
-        console.log(`Exception: ${e.stack}`);
-        return res.status(500).send();
-    }
 
-    if (!sentSubmissions.length) {
-        console.log("Delta does not contain an submission with status 'verstuurd'. Nothing should happen.");
+    // TODO exception handling
+    const delta = new Delta(req.body);
+
+    if (!delta.inserts.length) {
+        console.log("Delta does not contain an insertions. Nothing should happen.");
         return res.status(204).send();
     }
 
-    for (let submissionUri of sentSubmissions) {
-        processSubmission({res, uri: submissionUri})
+    let submissions = delta.getInsertsFor(triple(undefined, ADMS('status'), SUBMISSION_SENT_STATUS)).map(triple => createSubmissionFromSubmission(triple.subject.value));
+    // TODO expand this to also extract/process SubmissionTasks
+
+    if (!submissions.length) {
+        console.log("Delta does not contain an submission. Nothing should happen.");
+        return res.status(204).send();
     }
 
-    return res.status(200).send({data: sentSubmissions});
+    for (let submission of submissions) {
+        processSubmission({res, submission})
+    }
+
+    return res.status(200).send({
+        data: submissions.map(submission => submission.uri)
+    });
 });
 
 // TODO add PUT call
@@ -42,38 +55,12 @@ app.put('/:uuid', async function (req, res, next) {
     // TODO exception handling
     const submission = createSubmissionFromSubmissionResource(req.params.uuid);
 
-    const form = new FormData({submission});
-
-    // TODO exception handling
-    form.process();
-
-    // TODO exception handling
-    await form.insert();
+    processSubmission({res, submission});
 
     return res.status(200);
 });
 
-// TODO move this somewhere else
-function getSentSubmissions(delta) {
-    const inserts = flatten(delta.map(changeSet => changeSet.inserts));
-    return inserts.filter(isTriggerTriple).map(t => t.subject.value);
-}
-
-function isTriggerTriple(triple) {
-    return triple.predicate.value === ADMS('status').value
-        && triple.object.value === SUBMISSION_SENT_STATUS;
-}
-
-async function processSubmission({res, uri}) {
-    // retrieve/create the submission
-    let submission;
-    try {
-        submission = await createSubmissionByURI(uri);
-    } catch (e) {
-        console.log(`Something went wrong while trying to retrieve submission <${uri}>`);
-        console.log(`Exception: ${e.stack}`);
-        return res.status(500).send();
-    }
+async function processSubmission({res, submission}) {
 
     // we create a form with the needed properties
     const form = new FormData({submission});
@@ -95,7 +82,4 @@ async function processSubmission({res, uri}) {
         console.log(`Exception: ${e.stack}`);
         return res.status(500).send();
     }
-
-    // finish the call
-    return res.status(200).send();
 }
