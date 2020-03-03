@@ -29,6 +29,7 @@ app.post('/delta', async function (req, res) {
             return res.status(204).send();
         }
 
+        // TODO make it more easy to add new triggers and creation strategy.
         let submissions = [];
         try {
             submissions = await Promise.all(delta
@@ -41,13 +42,13 @@ app.post('/delta', async function (req, res) {
                     .map(async triple => await createSubmissionFromSubmissionTask(triple.subject.value)))
             );
         } catch (e) {
-            console.log(`Something went wrong while trying to retrieve the submissions.`);
+            console.log(`Something went wrong while trying to retrieve/create the submissions.`);
             console.log(`Exception: ${e.stack}`);
             return res.status(500).send();
         }
 
         if (!submissions.length) {
-            console.log("Delta does not contain an submission. Nothing should happen.");
+            console.log("Delta does not contain any submission. Nothing should happen.");
             return res.status(204).send();
         }
 
