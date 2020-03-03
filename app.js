@@ -26,11 +26,12 @@ app.post('/delta', async function (req, res, next) {
         const delta = new Delta(req.body);
 
         if (!delta.inserts.length) {
-            console.log("Delta does not contain an insertions. Nothing should happen.");
+            console.log("Delta does not contain any insertions. Nothing should happen.");
             return res.status(204).send();
         }
 
-        // TODO can this be done better?
+        // TODO can this be done better? Better error handling?
+        // TODO add submission task flow
         // TODO very buggy because of map and async request
         let submissions = [];
         try {
@@ -39,7 +40,7 @@ app.post('/delta', async function (req, res, next) {
                 .map(async (triple) => await createSubmissionFromSubmission(triple.subject.value))
             );
         } catch (e) {
-            console.log(`Something went wrong while trying to create the submissions.`);
+            console.log(`Something went wrong while trying to retrieve the submissions.`);
             console.log(`Exception: ${e.stack}`);
             return res.status(500).send();
         }
@@ -52,8 +53,14 @@ app.post('/delta', async function (req, res, next) {
             return res.status(204).send();
         }
 
-        for (let submission of submissions) {
-            await processSubmission({res, submission})
+        try {
+            await Promise.all(
+                submissions.map(async (submission) => await processSubmission(submission))
+            );
+        } catch (e) {
+            console.log(`Something went wrong while trying to extract the form-data from the submissions`);
+            console.log(`Exception: ${e.stack}`);
+            return res.status(500).send();
         }
 
         return res.status(200).send({
@@ -73,26 +80,15 @@ app.put('/:uuid', async function (req, res, next) {
     return res.status(200);
 });
 
-async function processSubmission({res, submission}) {
+async function processSubmission(submission) {
 
     // we create a form with the needed properties
     const form = new FormData({submission});
 
     // we process the form, extracting the properties
-    try {
-        form.process();
-    } catch (e) {
-        console.log(`Something went wrong while trying to extract the form-data from submission <${uri}>`);
-        console.log(`Exception: ${e.stack}`);
-        return res.status(500).send();
-    }
+    form.process();
 
     // save the form to the triple store
-    try {
-        await form.insert();
-    } catch (e) {
-        console.log(`Something went wrong while trying to save the form-data from submission <${uri}>, check your database connection?`);
-        console.log(`Exception: ${e.stack}`);
-        return res.status(500).send();
-    }
+    await form.insert();
+
 }
