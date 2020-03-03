@@ -19,15 +19,16 @@ WHERE {
 `
 }
 
-export function createSubmissionFromSubmittedResourceQuery(uri) {
+export function createSubmissionFromSubmittedResourceQuery(uuid) {
     return `
 PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 
 SELECT ?submission ?ttlFileURI ?submittedResourceURI
 WHERE {
   GRAPH ?g {
-    ?submission dct:subject ${sparqlEscapeUri(uri)} ;
-                dct:subject ?submittedResourceURI .
+    ?submittedResource mu:uuid ${sparqlEscapeString(uuid)} .
+    ?submission dct:subject ?submittedResourceURI .
     ?submittedResourceURI dct:source ?ttlFileURI .
   }
 } LIMIT 1`

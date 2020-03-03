@@ -73,20 +73,20 @@ app.put('/:uuid', async function (req, res) {
     try {
         submission = await createSubmissionFromSubmissionResource(req.params.uuid);
     } catch (e) {
-        console.log(`Something went wrong while trying to retrieve the submissions.`);
+        console.log(`Something went wrong while trying to retrieve/create the submission.`);
         console.log(`Exception: ${e.stack}`);
         return res.status(500).send();
     }
 
     try {
-        await processSubmission({res, submission});
+        await processSubmission(submission);
     } catch (e) {
-        console.log(`Something went wrong while trying to extract the form-data from the submissions`);
+        console.log(`Something went wrong while trying to extract the form-data from the submission`);
         console.log(`Exception: ${e.stack}`);
         return res.status(500).send();
     }
 
-    return res.status(200);
+    return res.status(200).send({data: submission.uri});
 });
 
 async function processSubmission(submission) {
