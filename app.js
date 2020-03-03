@@ -20,9 +20,8 @@ app.get('/', function (req, res) {
     res.send('Hello toezicht-flattened-form-data-generator');
 });
 
-app.post('/delta', async function (req, res, next) {
+app.post('/delta', async function (req, res) {
 
-        // TODO exception handling
         const delta = new Delta(req.body);
 
         if (!delta.inserts.length) {
@@ -30,23 +29,22 @@ app.post('/delta', async function (req, res, next) {
             return res.status(204).send();
         }
 
-        // TODO can this be done better? Better error handling?
-        // TODO add submission task flow
-        // TODO very buggy because of map and async request
         let submissions = [];
         try {
             submissions = await Promise.all(delta
                 .getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_SENT_STATUS)))
                 .map(async (triple) => await createSubmissionFromSubmission(triple.subject.value))
             );
+            submissions = submissions.concat(
+                await Promise.all(delta
+                    .getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_TASK_SUCCESSFUL)))
+                    .map(async triple => await createSubmissionFromSubmissionTask(triple.subject.value)))
+            );
         } catch (e) {
             console.log(`Something went wrong while trying to retrieve the submissions.`);
             console.log(`Exception: ${e.stack}`);
             return res.status(500).send();
         }
-        // submissions = submissions.concat(
-        //     await Promise.all(delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_TASK_SUCCESSFUL))).map(async triple => await createSubmissionFromSubmissionTask(triple.subject.value)))
-        // );
 
         if (!submissions.length) {
             console.log("Delta does not contain an submission. Nothing should happen.");
@@ -69,13 +67,24 @@ app.post('/delta', async function (req, res, next) {
     }
 );
 
-// TODO add PUT call
-app.put('/:uuid', async function (req, res, next) {
+app.put('/:uuid', async function (req, res) {
 
-    // TODO exception handling
-    const submission = await createSubmissionFromSubmissionResource(req.params.uuid);
+    let submission;
+    try {
+        submission = await createSubmissionFromSubmissionResource(req.params.uuid);
+    } catch (e) {
+        console.log(`Something went wrong while trying to retrieve the submissions.`);
+        console.log(`Exception: ${e.stack}`);
+        return res.status(500).send();
+    }
 
-    await processSubmission({res, submission});
+    try {
+        await processSubmission({res, submission});
+    } catch (e) {
+        console.log(`Something went wrong while trying to extract the form-data from the submissions`);
+        console.log(`Exception: ${e.stack}`);
+        return res.status(500).send();
+    }
 
     return res.status(200);
 });
