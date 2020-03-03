@@ -8,10 +8,11 @@ export function createSubmissionForQuery(uri) {
     return `
 PREFIX dct: <http://purl.org/dc/terms/>
 
-SELECT ?ttlFileURI ?submittedResourceURI
+SELECT ?submission ?ttlFileURI ?submittedResourceURI
 WHERE {
   GRAPH ?g {
     ${sparqlEscapeUri(uri)} dct:subject ?submittedResourceURI .
+    ?submission dct:subject ?submittedResourceURI .
     ?submittedResourceURI dct:source ?ttlFileURI .
   }
 } LIMIT 1
