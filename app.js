@@ -1,7 +1,7 @@
 import flatten from 'lodash.flatten';
 import bodyParser from 'body-parser';
 import {app} from 'mu';
-import {createSubmissionByURI, SUBMISSION_SENT_STATUS} from "./lib/submission";
+import {createSubmissionByURI, createSubmissionFromSubmissionResource, SUBMISSION_SENT_STATUS} from "./lib/submission";
 import {FormData} from "./lib/form-data";
 import {ADMS} from "./util/namespaces";
 
@@ -38,7 +38,19 @@ app.post('/delta', async function (req, res, next) {
 
 // TODO add PUT call
 app.put('/:uuid', async function (req, res, next) {
-    return res.status(200).send(req.params.uuid);
+
+    // TODO exception handling
+    const submission = createSubmissionFromSubmissionResource(req.params.uuid);
+
+    const form = new FormData({submission});
+
+    // TODO exception handling
+    form.process();
+
+    // TODO exception handling
+    await form.insert();
+
+    return res.status(200);
 });
 
 // TODO move this somewhere else
