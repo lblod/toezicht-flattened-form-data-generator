@@ -1,8 +1,9 @@
 import {sparqlEscapeUri, sparqlEscapeString} from 'mu';
 import {MELDING, PROV} from "./namespaces";
 
+// TODO can this usage of queries be improved?
+
 // TODO add following check to the query  --> ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
-// TODO move queries to separate file.
 export function createSubmissionForQuery(uri) {
     return `
 PREFIX dct: <http://purl.org/dc/terms/>
@@ -15,6 +16,38 @@ WHERE {
   }
 } LIMIT 1
 `
+}
+
+export function createSubmissionFromSubmittedResourceQuery(uri) {
+    return `
+PREFIX dct: <http://purl.org/dc/terms/>
+
+SELECT ?submission ?ttlFileURI ?submittedResourceURI
+WHERE {
+  GRAPH ?g {
+    ?submission dct:subject ${sparqlEscapeUri(uri)} ;
+                dct:subject ?submittedResourceURI .
+    ?submittedResourceURI dct:source ?ttlFileURI .
+  }
+} LIMIT 1`
+}
+
+export function createSubmissionFromAutoSubmissionTaskQuery(uri) {
+    return `
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX adms: <http://www.w3.org/ns/adms#>
+
+SELECT ?submission ?ttlFileURI ?submittedResourceURI
+WHERE {
+  GRAPH ?g {
+    ${sparqlEscapeUri(uri)} a melding:AutomaticSubmissionTask ;
+                            prov:generated ?submission ;
+                            adms:status <http://lblod.data.gift/automatische-melding-statuses/successful-concept> .
+    ?submission dct:subject ?submittedResourceURI .
+    ?submittedResourceURI dct:source ?ttlFileURI .
+  }
+} LIMIT 1`
 }
 
 export function insertFormDataQuery({uri, uuid, submission, properties}) {

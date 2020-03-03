@@ -11,6 +11,8 @@ app.get('/', function (req, res) {
     res.send('Hello toezicht-flattened-form-data-generator');
 });
 
+
+// TODO expand this to also extract/process SubmissionTasks
 app.post('/delta', async function (req, res, next) {
     let sentSubmissions;
     try {
@@ -34,6 +36,12 @@ app.post('/delta', async function (req, res, next) {
     return res.status(200).send({data: sentSubmissions});
 });
 
+// TODO add PUT call
+app.put('/:uuid', async function (req, res, next) {
+    return res.status(200).send(req.params.uuid);
+});
+
+// TODO move this somewhere else
 function getSentSubmissions(delta) {
     const inserts = flatten(delta.map(changeSet => changeSet.inserts));
     return inserts.filter(isTriggerTriple).map(t => t.subject.value);
