@@ -3,8 +3,10 @@ import bodyParser from 'body-parser';
 import {app} from 'mu';
 import {
     createSubmissionFromSubmission,
-    createSubmissionFromSubmissionResource, createSubmissionFromSubmissionTask, NotFound,
-    SUBMISSION_SENT_STATUS, SUBMISSION_TASK_SUCCESSFUL
+    createSubmissionFromSubmissionResource,
+    createSubmissionFromSubmissionTask,
+    SUBMISSION_SENT_STATUS,
+    SUBMISSION_TASK_SUCCESSFUL
 } from "./lib/submission";
 import {FormData} from "./lib/form-data";
 import {ADMS} from "./util/namespaces";
@@ -99,14 +101,10 @@ app.put('/flatten-submitted-document/:uuid', async function (req, res) {
 });
 
 async function processSubmission(submission) {
-
     // we create a form with the needed properties
     const form = new FormData({submission});
-
     // we process the form, extracting the properties
     form.process();
-
     // save the form to the triple store
     await form.insert();
-
 }

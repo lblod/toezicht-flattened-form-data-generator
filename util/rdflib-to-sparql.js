@@ -35,8 +35,7 @@ export function sparqlEscapeRDFLibObject(object) {
             case STRING:
                 return sparqlEscapeString(object.value);
             default:
-                return sparqlEscapeString(object.value)
-
+                return sparqlEscapeString(object.value);
         }
     }
 }
