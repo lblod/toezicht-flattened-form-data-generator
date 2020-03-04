@@ -45,7 +45,7 @@ WHERE {
                             adms:status <http://lblod.data.gift/automatische-melding-statuses/successful-concept> .
     ?submission dct:subject ?submittedResourceURI .
     ?submittedResourceURI dct:source ?ttlFileURI .
-    ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
+    
 } LIMIT 1`
 }
 
@@ -58,7 +58,7 @@ INSERT {
   GRAPH ?g {
     ${sparqlEscapeUri(uri)} a ${sparqlEscapeUri(MELDING('FormData').value)} .
     ${sparqlEscapeUri(uri)} mu:uuid ${sparqlEscapeString(uuid)} .
-    ${(properties.map(property => property.toNT(uri)).join('\n\t'))}
+    ${(properties.map(property => property.toNT(uri)).join('\n    '))}
     ${sparqlEscapeUri(uri)} ${sparqlEscapeUri(PROV('hadPrimarySource').value)} ${sparqlEscapeUri(submission.ttl.uri)} .
     ${sparqlEscapeUri(submission.uri)} ${sparqlEscapeUri(PROV('generated').value)} ${sparqlEscapeUri(uri)} .
   }
