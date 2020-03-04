@@ -43,9 +43,9 @@ app.post('/delta', async function (req, res) {
             );
         } catch (e) {
             console.log(`Something went wrong while trying to retrieve/create the submissions.`);
-            if (e instanceof NotFound) {
+            if (e.code) {
                 console.log(`Reason: ${e.message}`);
-                return res.status(204).send();
+                return res.status(e.code).send();
             }
             console.log(`Exception: ${e.stack}`);
             return res.status(500).send();
@@ -79,9 +79,9 @@ app.put('/flatten-submitted-document/:uuid', async function (req, res) {
         submission = await createSubmissionFromSubmissionResource(req.params.uuid);
     } catch (e) {
         console.log(`Something went wrong while trying to retrieve/create the submission.`);
-        if (e instanceof NotFound) {
+        if (e.code) {
             console.log(`Reason: ${e.message}`);
-            return res.status(204).send();
+            return res.status(e.code).send();
         }
         console.log(`Exception: ${e.stack}`);
         return res.status(500).send();
