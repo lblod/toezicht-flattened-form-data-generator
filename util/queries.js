@@ -36,6 +36,7 @@ export function createSubmissionFromAutoSubmissionTaskQuery(uri) {
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX adms: <http://www.w3.org/ns/adms#>
+PREFIX melding: <http://lblod.data.gift/vocabularies/automatische-melding/>
 
 SELECT ?submission ?ttlFileURI ?submittedResourceURI
 WHERE {

@@ -42,11 +42,13 @@ app.post('/delta', async function (req, res) {
                     .map(async triple => await createSubmissionFromSubmissionTask(triple.subject.value)))
             );
         } catch (e) {
+            // TODO rethink this error flow
             console.log(`Something went wrong while trying to retrieve/create the submission.`);
             if(e.stack) {
                 console.log(`Exception: ${e.stack}`);
                 return res.status(500).send();
             }
+            console.log(`Reason: ${e.message}`);
             return res.status(204).send();
         }
 
@@ -82,6 +84,7 @@ app.put('/:uuid', async function (req, res) {
             console.log(`Exception: ${e.stack}`);
             return res.status(500).send();
         }
+        console.log(`Reason: ${e.message}`);
         return res.status(204).send();
     }
 
