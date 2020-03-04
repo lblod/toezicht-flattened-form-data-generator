@@ -42,9 +42,12 @@ app.post('/delta', async function (req, res) {
                     .map(async triple => await createSubmissionFromSubmissionTask(triple.subject.value)))
             );
         } catch (e) {
-            console.log(`Something went wrong while trying to retrieve/create the submissions.`);
-            console.log(`Exception: ${e.stack}`);
-            return res.status(500).send();
+            console.log(`Something went wrong while trying to retrieve/create the submission.`);
+            if(e.stack) {
+                console.log(`Exception: ${e.stack}`);
+                return res.status(500).send();
+            }
+            return res.status(204).send();
         }
 
         if (!submissions.length) {
@@ -75,8 +78,11 @@ app.put('/:uuid', async function (req, res) {
         submission = await createSubmissionFromSubmissionResource(req.params.uuid);
     } catch (e) {
         console.log(`Something went wrong while trying to retrieve/create the submission.`);
-        console.log(`Exception: ${e.stack}`);
-        return res.status(500).send();
+        if(e.stack) {
+            console.log(`Exception: ${e.stack}`);
+            return res.status(500).send();
+        }
+        return res.status(204).send();
     }
 
     try {
