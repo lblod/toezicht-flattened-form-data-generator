@@ -45,7 +45,7 @@ WHERE {
                             adms:status <http://lblod.data.gift/automatische-melding-statuses/successful-concept> .
     ?submission dct:subject ?submittedResourceURI .
     ?submittedResourceURI dct:source ?ttlFileURI .
-    
+    ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
 } LIMIT 1`
 }
 
