@@ -53,6 +53,7 @@ export function insertFormDataQuery({uri, uuid, submission, properties}) {
    return `
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+PREFIX meb: <http://rdf.myexperiment.org/ontologies/base/>
 
 INSERT {
   GRAPH ?g {
@@ -64,7 +65,7 @@ INSERT {
   }
 } WHERE {
   GRAPH ?g {
-    ${sparqlEscapeUri(submission.uri)} ?p ?o .
+    ${sparqlEscapeUri(submission.uri)} a meb:Submission .
   }
 }
 `
