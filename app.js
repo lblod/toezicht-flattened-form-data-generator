@@ -29,7 +29,7 @@ app.post('/delta', async function (req, res) {
             return res.status(204).send();
         }
 
-        // TODO make it more easy to add new triggers and creation strategy.
+        // TODO make it more easy to add new triggers <=> creation strategies.
         let submissions = [];
         try {
             submissions = await Promise.all(delta

@@ -3,18 +3,16 @@ import {MELDING, PROV} from "./namespaces";
 
 // TODO can this usage of queries be improved?
 
-// TODO add following check to the query  --> ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
 export function createSubmissionForQuery(uri) {
     return `
 PREFIX dct: <http://purl.org/dc/terms/>
 
 SELECT ?submission ?ttlFileURI ?submittedResourceURI
 WHERE {
-  GRAPH ?g {
     ${sparqlEscapeUri(uri)} dct:subject ?submittedResourceURI .
     ?submission dct:subject ?submittedResourceURI .
     ?submittedResourceURI dct:source ?ttlFileURI .
-  }
+    ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
 } LIMIT 1
 `
 }
@@ -26,11 +24,10 @@ PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 
 SELECT ?submission ?ttlFileURI ?submittedResourceURI
 WHERE {
-  GRAPH ?g {
     ?submittedResource mu:uuid ${sparqlEscapeString(uuid)} .
     ?submission dct:subject ?submittedResourceURI .
     ?submittedResourceURI dct:source ?ttlFileURI .
-  }
+    ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
 } LIMIT 1`
 }
 
@@ -42,13 +39,12 @@ PREFIX adms: <http://www.w3.org/ns/adms#>
 
 SELECT ?submission ?ttlFileURI ?submittedResourceURI
 WHERE {
-  GRAPH ?g {
     ${sparqlEscapeUri(uri)} a melding:AutomaticSubmissionTask ;
                             prov:generated ?submission ;
                             adms:status <http://lblod.data.gift/automatische-melding-statuses/successful-concept> .
     ?submission dct:subject ?submittedResourceURI .
     ?submittedResourceURI dct:source ?ttlFileURI .
-  }
+    ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
 } LIMIT 1`
 }
 
