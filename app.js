@@ -72,7 +72,7 @@ app.post('/delta', async function (req, res) {
     }
 );
 
-app.put('/:uuid', async function (req, res) {
+app.put('/flatten-submitted-document/:uuid', async function (req, res) {
 
     let submission;
     try {
