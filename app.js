@@ -34,15 +34,16 @@ app.post('/delta', async function (req, res) {
         // TODO make it more easy to add new triggers <=> creation strategies.
         let submissions = [];
         try {
-            submissions = await Promise.all(delta
-                .getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_SENT_STATUS)))
-                .map(async (triple) => await createSubmissionFromSubmission(triple.subject.value))
-            );
-            submissions = submissions.concat(
-                await Promise.all(delta
-                    .getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_TASK_SUCCESSFUL)))
-                    .map(async triple => await createSubmissionFromSubmissionTask(triple.subject.value)))
-            );
+            // get submissions for submission URIs
+            let inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_SENT_STATUS)));
+            for(let triple in inserts) {
+                submissions.push(await createSubmissionFromSubmission(inserts[triple].subject.value));
+            }
+            // get submissions for submission-task URIs
+            inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_TASK_SUCCESSFUL)));
+            for(let triple in inserts) {
+                submissions.push(await createSubmissionFromSubmissionTask(inserts[triple].subject.value));
+            }
         } catch (e) {
             console.log(`Something went wrong while trying to retrieve/create the submissions.`);
             if (e.code) {
@@ -59,9 +60,9 @@ app.post('/delta', async function (req, res) {
         }
 
         try {
-            await Promise.all(
-                submissions.map(async (submission) => await processSubmission(submission))
-            );
+            for(let submission in submissions) {
+                await processSubmission(submissions[submission]);
+            }
         } catch (e) {
             console.log(`Something went wrong while trying to extract the form-data from the submissions`);
             console.log(`Exception: ${e.stack}`);
