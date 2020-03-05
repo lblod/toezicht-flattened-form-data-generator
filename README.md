@@ -81,12 +81,12 @@ The `/delta` handling consists of 3 (major) steps:
 3) Save the extracted, flat-mapped, properties to the triple-store as a resource of type `melding:FormData`.
 
 ```
-PUT /flatten-submitted-document/:uuid
+PUT /submission-documents/:uuid/flatten
 ```
 
 Triggers the flat-mapping of the submission-document for the given `uuid` and saves this as form-data into the triple-store.
 
-The `/flatten-submitted-document/:uuid` handling consists of 3 (major) steps:
+The `/submission-documents/:uuid/flatten` handling consists of 3 (major) steps:
 
 1) Retrieve the linked ttl-file of type `<http://data.lblod.gift/concepts/form-data-file-type>` for the given `uuid`.
 2) Extract and flat-map the needed properties from the retrieved ttl-file.
