@@ -7,7 +7,7 @@ import {
     sparqlEscapeDateTime,
     sparqlEscapeBool,
 } from 'mu';
-import {XSD} from "./namespaces";
+import {XSD} from './namespaces';
 
 const DATE = XSD('date').value;
 const DATETIME = XSD('dateTime').value;

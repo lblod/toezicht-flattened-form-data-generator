@@ -1,5 +1,5 @@
 import {sparqlEscapeUri, sparqlEscapeString} from 'mu';
-import {MELDING, PROV} from "./namespaces";
+import {MELDING, PROV} from './namespaces';
 
 // TODO can this usage of queries be improved?
 
@@ -13,8 +13,7 @@ WHERE {
     ?submission dct:subject ?submittedResourceURI .
     ?submittedResourceURI dct:source ?ttlFileURI .
     ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
-} LIMIT 1
-`
+} LIMIT 1`;
 }
 
 export function createSubmissionFromSubmittedResourceQuery(uuid) {
@@ -28,7 +27,7 @@ WHERE {
     ?submission dct:subject ?submittedResourceURI .
     ?submittedResourceURI dct:source ?ttlFileURI .
     ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
-} LIMIT 1`
+} LIMIT 1`;
 }
 
 export function createSubmissionFromAutoSubmissionTaskQuery(uri) {
@@ -46,7 +45,7 @@ WHERE {
     ?submission dct:subject ?submittedResourceURI .
     ?submittedResourceURI dct:source ?ttlFileURI .
     ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
-} LIMIT 1`
+} LIMIT 1`;
 }
 
 export function insertFormDataQuery({uri, uuid, submission, properties}) {
@@ -67,6 +66,5 @@ INSERT {
   GRAPH ?g {
     ${sparqlEscapeUri(submission.uri)} a meb:Submission .
   }
-}
-`
+}`;
 }
