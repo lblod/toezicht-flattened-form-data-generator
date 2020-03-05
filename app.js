@@ -103,7 +103,7 @@ app.put('/submission-documents/:uuid/flatten', async function (req, res) {
 
 async function processSubmission(submission) {
     // we create a form with the needed properties
-    const form = new FormData({submission});
+    const form = await new FormData({submission}).init();
     // we process the form, extracting the properties
     form.process();
     // save the form to the triple store

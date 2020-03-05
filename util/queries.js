@@ -30,6 +30,7 @@ WHERE {
 } LIMIT 1`;
 }
 
+// TODO ask about the dct:type of file.
 export function createSubmissionFromAutoSubmissionTaskQuery(uri) {
     return `
 PREFIX dct: <http://purl.org/dc/terms/>
@@ -49,7 +50,7 @@ WHERE {
 }
 
 export function insertFormDataQuery({uri, uuid, submission, properties}) {
-   return `
+    return `
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 PREFIX meb: <http://rdf.myexperiment.org/ontologies/base/>
@@ -66,5 +67,34 @@ INSERT {
   GRAPH ?g {
     ${sparqlEscapeUri(submission.uri)} a meb:Submission .
   }
+}`;
+}
+
+export function completeFormDataFromSubmissionQuery(uri) {
+    return `
+PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+PREFIX meb: <http://rdf.myexperiment.org/ontologies/base/>
+PREFIX prov: <http://www.w3.org/ns/prov#>
+PREFIX melding: <http://lblod.data.gift/vocabularies/automatische-melding/>
+
+SELECT DISTINCT ?formDataURI ?formDataUUID 
+ 
+WHERE {
+    ${sparqlEscapeUri(uri)} a meb:Submission ;
+                            prov:generated ?formDataURI .
+    ?formDataURI a melding:FormData ;
+                 mu:uuid ?formDataUUID.
+}`;
+}
+
+export function deleteFormDataQuery(uri) {
+    return `
+PREFIX melding: <http://lblod.data.gift/vocabularies/automatische-melding/>
+
+DELETE WHERE {
+    GRAPH ?g {
+    ${sparqlEscapeUri(uri)} a melding:FormData ;
+                            ?predicate ?object .
+    }
 }`;
 }
