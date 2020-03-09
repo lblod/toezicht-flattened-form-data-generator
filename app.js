@@ -54,9 +54,7 @@ app.post('/delta', async function (req, res) {
             return res.status(204).send();
         } else {
             processSubmissions(submissions); // don't await async processing
-            return res.status(200).send({
-                data: submissions.map(submission => submission.uri)
-            });
+            return res.status(202).send();
         }
     }
 );
