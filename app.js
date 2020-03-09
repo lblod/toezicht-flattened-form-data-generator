@@ -33,45 +33,31 @@ app.post('/delta', async function (req, res) {
 
         // TODO make it more easy to add new triggers <=> creation strategies.
         let submissions = [];
-        try {
-            // get submissions for submission URIs
-            let inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_SENT_STATUS)));
-            for(let triple of inserts) {
-                submissions.push(await createSubmissionFromSubmission(triple.subject.value));
-            }
-            // get submissions for submission-task URIs
-            inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_TASK_SUCCESSFUL)));
-            for(let triple of inserts) {
-                submissions.push(await createSubmissionFromSubmissionTask(triple.subject.value));
-            }
-        } catch (e) {
-            console.log(`Something went wrong while trying to retrieve/create the submissions.`);
-            if (e.code) {
-                console.log(`Reason: ${e.message}`);
-                return res.status(e.code).send();
-            }
-            console.log(`Exception: ${e.stack}`);
-            return res.status(500).send();
+
+        // get submissions for submission URIs
+        let inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_SENT_STATUS)));
+        for(let triple of inserts) {
+            const submission = await createSubmissionFromSubmission(triple.subject.value);
+            if (submission)
+                submissions.push(submission);
+        }
+        // get submissions for submission-task URIs
+        inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_TASK_SUCCESSFUL)));
+        for(let triple of inserts) {
+            const submission = await createSubmissionFromSubmissionTask(triple.subject.value);
+            if (submission)
+                submissions.push(submission);
         }
 
         if (!submissions.length) {
             console.log("Delta does not contain any submission. Nothing should happen.");
             return res.status(204).send();
+        } else {
+            processSubmissions(submissions); // don't await async processing
+            return res.status(200).send({
+                data: submissions.map(submission => submission.uri)
+            });
         }
-
-        try {
-            for(let submission of submissions) {
-                await processSubmission(submission);
-            }
-        } catch (e) {
-            console.log(`Something went wrong while trying to extract the form-data from the submissions`);
-            console.log(`Exception: ${e.stack}`);
-            return res.status(500).send();
-        }
-
-        return res.status(200).send({
-            data: submissions.map(submission => submission.uri)
-        });
     }
 );
 
@@ -79,26 +65,27 @@ app.put('/submission-documents/:uuid/flatten', async function (req, res) {
     let submission;
     try {
         submission = await createSubmissionFromSubmissionResource(req.params.uuid);
+        if (submission)
+            await processSubmission(submission);
+
+        return res.status(204).send();
     } catch (e) {
-        console.log(`Something went wrong while trying to retrieve/create the submission.`);
-        if (e.code) {
-            console.log(`Reason: ${e.message}`);
-            return res.status(e.code).send();
-        }
+        console.log(`Something went wrong while flattening the submission.`);
         console.log(`Exception: ${e.stack}`);
         return res.status(500).send();
     }
-
-    try {
-        await processSubmission(submission);
-    } catch (e) {
-        console.log(`Something went wrong while trying to extract the form-data from the submission`);
-        console.log(`Exception: ${e.stack}`);
-        return res.status(500).send();
-    }
-
-    return res.status(200).send({data: submission.uri});
 });
+
+async function processSubmissions(submissions) {
+    for(let submission of submissions) {
+        try {
+            await processSubmission(submission);
+        } catch (e) {
+            console.log(`Something went wrong while trying to extract the form-data from the submissions`);
+            console.log(`Exception: ${e.stack}`);
+        }
+    }
+}
 
 async function processSubmission(submission) {
     // we create a form with the needed properties
