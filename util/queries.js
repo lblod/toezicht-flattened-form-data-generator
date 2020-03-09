@@ -23,7 +23,7 @@ PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 
 SELECT ?submission ?ttlFileURI ?submittedResourceURI
 WHERE {
-    ?submittedResource mu:uuid ${sparqlEscapeString(uuid)} .
+    ?submittedResourceURI mu:uuid ${sparqlEscapeString(uuid)} .
     ?submission dct:subject ?submittedResourceURI .
     ?submittedResourceURI dct:source ?ttlFileURI .
     ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
@@ -77,14 +77,14 @@ PREFIX meb: <http://rdf.myexperiment.org/ontologies/base/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX melding: <http://lblod.data.gift/vocabularies/automatische-melding/>
 
-SELECT DISTINCT ?formDataURI ?formDataUUID 
- 
+SELECT DISTINCT ?formDataURI ?formDataUUID
+
 WHERE {
     ${sparqlEscapeUri(uri)} a meb:Submission ;
                             prov:generated ?formDataURI .
     ?formDataURI a melding:FormData ;
                  mu:uuid ?formDataUUID.
-}`;
+} LIMIT 1`;
 }
 
 export function deleteFormDataQuery(uri) {
