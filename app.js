@@ -36,13 +36,13 @@ app.post('/delta', async function (req, res) {
         try {
             // get submissions for submission URIs
             let inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_SENT_STATUS)));
-            for(let triple in inserts) {
-                submissions.push(await createSubmissionFromSubmission(inserts[triple].subject.value));
+            for(let triple of inserts) {
+                submissions.push(await createSubmissionFromSubmission(triple.subject.value));
             }
             // get submissions for submission-task URIs
             inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_TASK_SUCCESSFUL)));
-            for(let triple in inserts) {
-                submissions.push(await createSubmissionFromSubmissionTask(inserts[triple].subject.value));
+            for(let triple of inserts) {
+                submissions.push(await createSubmissionFromSubmissionTask(triple.subject.value));
             }
         } catch (e) {
             console.log(`Something went wrong while trying to retrieve/create the submissions.`);
@@ -60,8 +60,8 @@ app.post('/delta', async function (req, res) {
         }
 
         try {
-            for(let submission in submissions) {
-                await processSubmission(submissions[submission]);
+            for(let submission of submissions) {
+                await processSubmission(submission);
             }
         } catch (e) {
             console.log(`Something went wrong while trying to extract the form-data from the submissions`);
@@ -76,7 +76,6 @@ app.post('/delta', async function (req, res) {
 );
 
 app.put('/submission-documents/:uuid/flatten', async function (req, res) {
-
     let submission;
     try {
         submission = await createSubmissionFromSubmissionResource(req.params.uuid);
