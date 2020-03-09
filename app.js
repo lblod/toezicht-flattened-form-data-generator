@@ -86,10 +86,6 @@ async function processSubmissions(submissions) {
 }
 
 async function processSubmission(submission) {
-    // we create a form with the needed properties
-    const form = await new FormData({submission}).init();
-    // we process the form, extracting the properties
-    form.process();
-    // save the form to the triple store
-    await form.insert();
+    const form = new FormData({submission});
+    await form.flatten();
 }
