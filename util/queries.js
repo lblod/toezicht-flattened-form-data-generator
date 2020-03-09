@@ -9,7 +9,7 @@ PREFIX dct: <http://purl.org/dc/terms/>
 
 SELECT ?submission ?ttlFileURI ?submittedResourceURI
 WHERE {
-    ${sparqlEscapeUri(uri)} dct:subject ?submittedResourceURI .
+    BIND (${sparqlEscapeUri(uri)} as ?submission)
     ?submission dct:subject ?submittedResourceURI .
     ?submittedResourceURI dct:source ?ttlFileURI .
     ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
