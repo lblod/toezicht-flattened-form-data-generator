@@ -1,5 +1,5 @@
 # toezicht-flattend-form-data-generator
-Microservice that listens to the delta notifier and inserts the form data in the triple store if a form is submitted.
+Microservice that listens to the delta notifier and inserts/updates the form data as a flat object in the triple store.
 
 ## Installation
 Add the following snippet to your `docker-compose.yml`:
@@ -11,9 +11,9 @@ toezicht-flattened-form-data-generator:
     - ./data/files/submissions:/share/submissions
 ```
 
-The volume mounted in `/share/submissions` must contain the Turtle files containing the data harvested from the completed forms.
+The volume mounted in `/share/submissions` must contain the Turtle files containing the data to fill in the forms.
 
-Configure the delta-notification service to send notifications on the `/delta` endpoint when an automatic submission task is ready for validation. Add the following snippet in the delta rules configuration of your project to make this possible:
+Configure the delta-notification service to send notifications on the `/delta` endpoint by adding the following rules in `./delta/rules.js`:
 
 ```javascript
 export default [
@@ -25,7 +25,7 @@ export default [
       },
       object: {
         type: 'uri',
-        value: 'http://lblod.data.gift/concepts/9bd8d86d-bb10-4456-a84e-91e9507c374c'
+        value: 'http://lblod.data.gift/concepts/9bd8d86d-bb10-4456-a84e-91e9507c374c'  // sent status
       }
     },
     callback: {
@@ -63,16 +63,14 @@ export default [
 ```
 
 ## API
-```
-POST /delta
-```
 
-Triggers the flat-mapping of the resources related submission-document and saves this as form-data into the triple-store.
+### POST /delta
+Triggers the flat-mapping of the resources related to a submission document and saves this as `melding:FormData` resource into the triple-store.
 
 The service is triggered by updates from the following resources:
 
- - type `meb:Submission`of which the `adms:status` is updated to `<http://lblod.data.gift/concepts/9bd8d86d-bb10-4456-a84e-91e9507c374c>`
- - type `melding:AutomaticSubmissionTask` of with the `adms:status` is updated to `<http://lblod.data.gift/automatische-melding-statuses/successful-concept>`
+ - a submission is submitted. I.e. resource of type `meb:Submission`of which the `adms:status` is updated to `<http://lblod.data.gift/concepts/9bd8d86d-bb10-4456-a84e-91e9507c374c>`
+ - an automatic submission resulted in a new concept submission. I.e. resource of type `melding:AutomaticSubmissionTask` of with the `adms:status` is updated to `<http://lblod.data.gift/automatische-melding-statuses/successful-concept>`
 
 The `/delta` handling consists of 3 (major) steps:
 
@@ -80,10 +78,8 @@ The `/delta` handling consists of 3 (major) steps:
 2) Extract and flat-map the needed properties from the retrieved ttl-file.
 3) Save the extracted, flat-mapped, properties to the triple-store as a resource of type `melding:FormData`.
 
-```
-PUT /submission-documents/:uuid/flatten
-```
 
+### PUT /submission-documents/:uuid/flatten
 Triggers the flat-mapping of the submission-document for the given `uuid` and saves this as form-data into the triple-store.
 
 The `/submission-documents/:uuid/flatten` handling consists of 3 (major) steps:
@@ -92,9 +88,10 @@ The `/submission-documents/:uuid/flatten` handling consists of 3 (major) steps:
 2) Extract and flat-map the needed properties from the retrieved ttl-file.
 3) Save the extracted, flat-mapped, properties to the triple-store as a resource of type `melding:FormData`.
 
-### Current supported property flat-mapping
+## Flat mapping
+A `melding:FormData` resource is generated based on the data found in the TTL file. The table below lists the mapped property paths:
 
-| Form-Data Property                          | Path to retrieve from in the TTL                        |
+| FormData Property                          | Property path in TTL (starting from submission document) |
 |-----------------------------------|-------------------------------------------------------------------|
 | dct:type                          | rdf:type                                                          |
 | eli:date_publication              | eli:date_publication                                              |
@@ -122,5 +119,6 @@ The `/submission-documents/:uuid/flatten` handling consists of 3 (major) steps:
 The following services are also involved in the automatic processing of a submission:
 * [automatic-submission-service](https://github.com/lblod/automatic-submission-service)
 * [download-url-service](https://github.com/lblod/download-url-service)
-* [validate-submission-service](https://github.com/lblod/validate-submission-service)
 * [import-submissions-service](https://github.com/lblod/import-submission-service)
+* [enrich-submission-service](https://github.com/lblod/enrich-submission-service)
+* [validate-submission-service](https://github.com/lblod/validate-submission-service)
