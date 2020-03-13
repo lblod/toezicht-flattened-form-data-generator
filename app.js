@@ -5,7 +5,9 @@ import {
     createSubmissionFromSubmission,
     createSubmissionFromSubmissionResource,
     createSubmissionFromSubmissionTask,
+    deleteFormDataFromSubmission,
     SUBMISSION_SENT_STATUS,
+    SUBMISSION_DELETED_STATUS,
     SUBMISSION_TASK_SUCCESSFUL
 } from "./lib/submission";
 import {FormData} from "./lib/form-data";
@@ -23,41 +25,22 @@ app.get('/', function (req, res) {
 });
 
 app.post('/delta', async function (req, res) {
+    const delta = new Delta(req.body);
 
-        const delta = new Delta(req.body);
-
-        if (!delta.inserts.length) {
-            console.log("Delta does not contain any insertions. Nothing should happen.");
-            return res.status(204).send();
-        }
-
-        // TODO make it more easy to add new triggers <=> creation strategies.
-        let submissions = [];
-
-        // get submissions for submission URIs
-        let inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_SENT_STATUS)));
-        for(let triple of inserts) {
-            const submission = await createSubmissionFromSubmission(triple.subject.value);
-            if (submission)
-                submissions.push(submission);
-        }
-        // get submissions for submission-task URIs
-        inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_TASK_SUCCESSFUL)));
-        for(let triple of inserts) {
-            const submission = await createSubmissionFromSubmissionTask(triple.subject.value);
-            if (submission)
-                submissions.push(submission);
-        }
-
-        if (!submissions.length) {
-            console.log("Delta does not contain any submission. Nothing should happen.");
-            return res.status(204).send();
-        } else {
-            processSubmissions(submissions); // don't await async processing
-            return res.status(202).send();
-        }
+    if (!delta.inserts.length) {
+        console.log("Delta does not contain any insertions. Nothing should happen.");
+        return res.status(204).send();
     }
-);
+
+    const submissions =  await processInsertions(delta);
+    const deletions = await processDeletions(delta);
+
+    if (!submissions && !deletions) {
+        return res.status(204).send();
+    } else {
+        return res.status(200).send();
+    }
+});
 
 app.put('/submission-documents/:uuid/flatten', async function (req, res) {
     let submission;
@@ -74,6 +57,32 @@ app.put('/submission-documents/:uuid/flatten', async function (req, res) {
     }
 });
 
+async function processInsertions(delta) {
+    // TODO make it more easy to add new triggers <=> creation strategies.
+    let submissions = [];
+
+    // get submissions for submission URIs
+    let inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_SENT_STATUS)));
+    for(let triple of inserts) {
+        const submission = await createSubmissionFromSubmission(triple.subject.value);
+        if (submission)
+            submissions.push(submission);
+    }
+
+    // get submissions for submission-task URIs
+    inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_TASK_SUCCESSFUL)));
+    for(let triple of inserts) {
+        const submission = await createSubmissionFromSubmissionTask(triple.subject.value);
+        if (submission)
+            submissions.push(submission);
+    }
+
+    if (submissions.length) {
+        processSubmissions(submissions); // don't await async processing
+    }
+    return submissions;
+}
+
 async function processSubmissions(submissions) {
     for(let submission of submissions) {
         try {
@@ -88,4 +97,19 @@ async function processSubmissions(submissions) {
 async function processSubmission(submission) {
     const form = new FormData({submission});
     await form.flatten();
+}
+
+async function processDeletions(delta) {
+    let deletions = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_DELETED_STATUS)));
+
+    for (let triple of deletions) {
+        try {
+            await deleteFormDataFromSubmission(triple.subject.value);
+        } catch (e) {
+            console.log(`Something went wrong while trying to delete the form data`);
+            console.log(`Exception: ${e.stack}`);
+        }
+    }
+
+    return deletions;
 }
