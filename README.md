@@ -96,6 +96,7 @@ A `melding:FormData` resource is generated based on the data found in the TTL fi
 | dct:type                          | rdf:type                                                          |
 | eli:date_publication              | eli:date_publication                                              |
 | eli:passed_by                     | eli:passed_by                                                     |
+|                                    | ^besluit:heeftNotulen/besluit:isGehoudenDoor                   |
 | eli:is_about                      | eli:is_about                                                      |
 | elod:financialYear                | elod:financialYear                                                |
 | eli:first_date_entry_in_force     | eli:first_date_entry_in_force                                     |
