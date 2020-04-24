@@ -125,7 +125,7 @@ export function retrieveCodeListQuery(uri) {
     return `
 SELECT ?concept
 WHERE {
-  ?concept <http://www.w3.org/2004/02/skos/core#topConceptOf> ${sparqlEscapeUri(uri)}
+  ?concept <http://www.w3.org/2004/02/skos/core#inScheme> ${sparqlEscapeUri(uri)}
 }
 `
 }
