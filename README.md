@@ -116,7 +116,7 @@ A `melding:FormData` resource is generated based on the data found in the TTL fi
 |                                   | ^besluit:heeftAgenda/prov:startedAtTime                           |
 |                                   | ^besluit:heeftUittreksel/prov:startedAtTime                       |
 | ext:decisionType                  | rdf:type (that is part of the decision-type concept-scheme)       |
-| ext:regulationTYpe                | rdf:type (that is part of the regulation-type concept-scheme)     |
+| ext:regulationType                | rdf:type (that is part of the regulation-type concept-scheme)     |
 
 ## Related services
 The following services are also involved in the automatic processing of a submission:
