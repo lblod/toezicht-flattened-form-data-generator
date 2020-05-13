@@ -104,7 +104,6 @@ A `melding:FormData` resource is generated based on the data found in the TTL fi
 | lblodBesluit:authenticityType     | lblodBesluit:authenticityType                                     |
 | lblodBesluit:chartOfAccount       | lblodBesluit:chartOfAccount                                       |
 | lblodBesluit:taxRate              | lblodBesluit:taxRate                                              |
-| lblodBesluit:taxType              | lblodBesluit:taxType                                              |
 | lblodBesluit:hasAdditionalTaxRate | lblodBesluit:hasAdditionalTaxRate                                 |
 | dct:description                   | dct:description                                                   |
 | rdfs:comment                      | rdfs:comment                                                      |
@@ -117,6 +116,7 @@ A `melding:FormData` resource is generated based on the data found in the TTL fi
 |                                   | ^besluit:heeftUittreksel/prov:startedAtTime                       |
 | ext:decisionType                  | rdf:type (that is part of the decision-type concept-scheme)       |
 | ext:regulationType                | rdf:type (that is part of the regulation-type concept-scheme)     |
+| ext:taxType                       | rdf:type (that is part of the tax-type concept-scheme)            |
 
 ## Related services
 The following services are also involved in the automatic processing of a submission:
