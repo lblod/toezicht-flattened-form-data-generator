@@ -5,7 +5,6 @@ import {
     createSubmissionFromSubmission,
     createSubmissionFromSubmissionResource,
     createSubmissionFromSubmissionTask,
-    deleteFormDataFromSubmission,
     SUBMISSION_SENT_STATUS,
     SUBMISSION_TASK_SUCCESSFUL
 } from "./lib/submission";
