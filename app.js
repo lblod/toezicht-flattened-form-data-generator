@@ -7,7 +7,6 @@ import {
     createSubmissionFromSubmissionTask,
     deleteFormDataFromSubmission,
     SUBMISSION_SENT_STATUS,
-    SUBMISSION_DELETED_STATUS,
     SUBMISSION_TASK_SUCCESSFUL
 } from "./lib/submission";
 import {FormData} from "./lib/form-data";
@@ -33,9 +32,8 @@ app.post('/delta', async function (req, res) {
     }
 
     const submissions =  await processInsertions(delta);
-    const deletions = await processDeletions(delta);
 
-    if (!submissions && !deletions) {
+    if (!submissions) {
         return res.status(204).send();
     } else {
         return res.status(200).send();
@@ -97,19 +95,4 @@ async function processSubmissions(submissions) {
 async function processSubmission(submission) {
     const form = new FormData({submission});
     await form.flatten();
-}
-
-async function processDeletions(delta) {
-    let deletions = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_DELETED_STATUS)));
-
-    for (let triple of deletions) {
-        try {
-            await deleteFormDataFromSubmission(triple.subject.value);
-        } catch (e) {
-            console.log(`Something went wrong while trying to delete the form data`);
-            console.log(`Exception: ${e.stack}`);
-        }
-    }
-
-    return deletions;
 }

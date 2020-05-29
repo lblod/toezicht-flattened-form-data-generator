@@ -99,28 +99,6 @@ DELETE WHERE {
 }`;
 }
 
-export function deleteFormDataFromSubmissionQuery(uri) {
-        return `
-PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
-PREFIX meb: <http://rdf.myexperiment.org/ontologies/base/>
-PREFIX prov: <http://www.w3.org/ns/prov#>
-PREFIX melding: <http://lblod.data.gift/vocabularies/automatische-melding/>
-
-DELETE {
-    GRAPH ?g {
-        ${sparqlEscapeUri(uri)} prov:generated ?formData .
-        ?formData ?p ?o .
-    }
-}
-WHERE {
-    GRAPH ?g {
-        ${sparqlEscapeUri(uri)} a meb:Submission ;
-            prov:generated ?formData .
-        ?formData ?p ?o .
-    }
-}`;
-}
-
 export function retrieveCodeListQuery(uri) {
     return `
 SELECT ?concept
