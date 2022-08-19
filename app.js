@@ -4,9 +4,11 @@ import { app } from 'mu';
 import {
   createSubmissionFromSubmissionResource,
   createSubmissionFromSubmissionTask,
+  createSubmissionFromSubmission,
+  SUBMISSION_SENT_STATUS,
 } from './lib/submission';
 import { FormData } from './lib/form-data';
-import { TASK } from './util/namespaces';
+import { TASK, ADMS } from './util/namespaces';
 import { Delta } from './lib/delta';
 import * as env from './env.js';
 import { updateTaskStatus } from './lib/submission-task.js';
@@ -24,13 +26,12 @@ app.get('/', function (req, res) {
   res.send('Hello toezicht-flattened-form-data-generator');
 });
 
-app.post('/delta', async function (req, res) {
+app.post('/automatic/delta', async function (req, res) {
   //We can already send a 200 back. The delta-notifier does not care about the result, as long as the request is closed.
   res.status(200).send();
 
   try {
     const delta = new Delta(req.body);
-    debugger;
 
     //Collect the triples about that form-data-generate operation of a task
     const relevantTaskTriples = delta.getInsertsFor(
@@ -44,7 +45,6 @@ app.post('/delta', async function (req, res) {
     for (const triple of relevantTaskTriples) {
       const taskUri = triple.subject.value;
       try {
-        //TODO this service reacts to all success from the previous task. Is this correct?
         await updateTaskStatus(taskUri, env.TASK_ONGOING_STATUS);
 
         const submission = await createSubmissionFromSubmissionTask(taskUri);
@@ -65,7 +65,39 @@ app.post('/delta', async function (req, res) {
     //const deletions = await processDeletions(delta);
   } catch (error) {
     const message =
-      'The task for enriching a submission could not even be started or finished due to an unexpected problem.';
+      'The task for generating form data for a submission could not even be started or finished due to an unexpected problem.';
+    console.error(`${message}\n`, error.message);
+    console.error(error);
+    await saveError({ message, detail: error.message });
+  }
+});
+
+app.post('/manual/delta', async function (req, res) {
+  //We can already send a 200 back. The delta-notifier does not care about the result, as long as the request is closed.
+  res.status(200).send();
+
+  try {
+    const delta = new Delta(req.body);
+
+    //Collect the triples about a submission that is sent
+    const relevantSubmissionTriples = delta.getInsertsFor(
+      triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_SENT_STATUS))
+    );
+    for (const triple of relevantSubmissionTriples) {
+      const submissionUri = triple.subject.value;
+      try {
+        const submission = createSubmissionFromSubmission(submissionUri);
+        await processSubmission(submission);
+      } catch (error) {
+        const message = `Something went wrong while generating form data for submission ${submissionUri}`;
+        console.error(`${message}\n`, error.message);
+        console.error(error);
+        await saveError({ message, detail: error.message });
+      }
+    }
+  } catch (error) {
+    const message =
+      'Unable to process the flattening for this submission due to an unexpected problem.';
     console.error(`${message}\n`, error.message);
     console.error(error);
     await saveError({ message, detail: error.message });
