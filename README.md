@@ -13,64 +13,14 @@ toezicht-flattened-form-data-generator:
 
 The volume mounted in `/share/submissions` must contain the Turtle files containing the data to fill in the forms.
 
-Configure the delta-notification service to send notifications on the `/delta` endpoint by adding the following rules in `./delta/rules.js`:
-
-```javascript
-export default [
-  {
-    match: {
-      predicate: {
-        type: 'uri',
-        value: 'http://www.w3.org/ns/adms#status'
-      },
-      object: {
-        type: 'uri',
-        value: 'http://lblod.data.gift/concepts/9bd8d86d-bb10-4456-a84e-91e9507c374c'  // sent status
-      }
-    },
-    callback: {
-      url: 'http://toezicht-flattened-form-data-generator/delta',
-      method: 'POST'
-    },
-    options: {
-      resourceFormat: 'v0.0.1',
-      gracePeriod: 1000,
-      ignoreFromSelf: true
-    }
-  },
-  {
-    match: {
-      predicate: {
-        type: "uri",
-        value: "http://www.w3.org/ns/adms#status"
-      },
-      object: {
-        type: "uri",
-        value: "http://lblod.data.gift/automatische-melding-statuses/successful-concept"
-      }
-    },
-    callback: {
-      method: "POST",
-      url: "http://save-sent-submission/delta"
-    },
-    options: {
-      resourceFormat: "v0.0.1",
-      gracePeriod: 1000,
-      ignoreFromSelf: true
-    }
-  }
-]
-```
+Configure the delta-notifier according to the tasks as defined in the model of the [job-controller-service](https://github.com/lblod/job-controller-service).
 
 ## API
 
 ### POST /delta
 Triggers the flat-mapping of the resources related to a submission document and saves this as `melding:FormData` resource into the triple-store.
 
-The service is triggered by updates from the following resources:
-
- - a submission is submitted. I.e. resource of type `meb:Submission`of which the `adms:status` is updated to `<http://lblod.data.gift/concepts/9bd8d86d-bb10-4456-a84e-91e9507c374c>`
- - an automatic submission resulted in a new concept submission. I.e. resource of type `melding:AutomaticSubmissionTask` of with the `adms:status` is updated to `<http://lblod.data.gift/automatische-melding-statuses/successful-concept>`
+The service is triggered when a task for this service has been created. This is the case when a submission has the status of `<http://lblod.data.gift/concepts/9bd8d86d-bb10-4456-a84e-91e9507c374c>` or when the resultsContainer has the status of `http://lblod.data.gift/automatische-melding-statuses/successful-concept`. In both situations, the task from the previous service in the flow has status "success", so this is what is used to trigger this service.
 
 The `/delta` handling consists of 3 (major) steps:
 
