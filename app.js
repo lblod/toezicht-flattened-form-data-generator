@@ -118,59 +118,7 @@ app.put('/submission-documents/:uuid/flatten', async function (req, res) {
   }
 });
 
-//async function processInsertions(delta) {
-//  // TODO make it more easy to add new triggers <=> creation strategies.
-//  let submissions = [];
-//
-//  // get submissions for submission URIs
-//  let inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_SENT_STATUS)));
-//  for (let triple of inserts) {
-//    const submission = await createSubmissionFromSubmission(triple.subject.value);
-//    if (submission)
-//      submissions.push(submission);
-//  }
-//
-//  // get submissions for submission-task URIs
-//  inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_TASK_SUCCESSFUL)));
-//  for (let triple of inserts) {
-//    const submission = await createSubmissionFromSubmissionTask(triple.subject.value);
-//    if (submission)
-//      submissions.push(submission);
-//  }
-//
-//  if (submissions.length) {
-//    processSubmissions(submissions); // don't await async processing
-//  }
-//  return submissions;
-//}
-
-//async function processSubmissions(submissions) {
-//  for (const submission of submissions) {
-//    try {
-//      await processSubmission(submission);
-//    } catch (e) {
-//      console.log('Something went wrong while trying to extract the form-data from the submissions');
-//      console.log(`Exception: ${e.stack}`);
-//    }
-//  }
-//}
-
 async function processSubmission(submission) {
   const form = new FormData({ submission });
   await form.flatten();
 }
-
-//async function processDeletions(delta) {
-//  let deletions = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_DELETED_STATUS)));
-//
-//  for (let triple of deletions) {
-//    try {
-//      await deleteFormDataFromSubmission(triple.subject.value);
-//    } catch (e) {
-//      console.log('Something went wrong while trying to delete the form data');
-//      console.log(`Exception: ${e.stack}`);
-//    }
-//  }
-//
-//  return deletions;
-//}
