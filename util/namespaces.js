@@ -13,3 +13,4 @@ export const MELDING = Namespace('http://lblod.data.gift/vocabularies/automatisc
 export const PROV = Namespace('http://www.w3.org/ns/prov#');
 export const ADMS = Namespace('http://www.w3.org/ns/adms#');
 export const XSD = Namespace('http://www.w3.org/2001/XMLSchema#');
+export const TASK = Namespace('http://redpencil.data.gift/vocabularies/tasks/')

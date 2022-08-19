@@ -36,14 +36,14 @@ export function createSubmissionFromAutoSubmissionTaskQuery(uri) {
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX adms: <http://www.w3.org/ns/adms#>
-PREFIX melding: <http://lblod.data.gift/vocabularies/automatische-melding/>
+PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 
 SELECT ?submission ?ttlFileURI ?submittedResourceURI
 WHERE {
   ${sparqlEscapeUri(uri)}
-    a melding:AutomaticSubmissionTask ;
-    prov:generated ?submission ;
-    adms:status <http://lblod.data.gift/automatische-melding-statuses/successful-concept> .
+    a task:Task ;
+    dct:isPartOf ?job .
+  ?job prov:generated ?submission .
   ?submission dct:subject ?submittedResourceURI .
   ?submittedResourceURI dct:source ?ttlFileURI .
   ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
