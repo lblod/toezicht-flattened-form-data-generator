@@ -14,11 +14,13 @@ import { FormData } from './lib/form-data';
 import { ADMS } from './util/namespaces';
 import { Delta } from './lib/delta';
 
-app.use(bodyParser.json({
-  type: function (req) {
-    return /^application\/json/.test(req.get('content-type'));
-  }
-}));
+app.use(
+  bodyParser.json({
+    type: function (req) {
+      return /^application\/json/.test(req.get('content-type'));
+    },
+  })
+);
 
 app.get('/', function (req, res) {
   res.send('Hello toezicht-flattened-form-data-generator');
@@ -46,8 +48,7 @@ app.put('/submission-documents/:uuid/flatten', async function (req, res) {
   let submission;
   try {
     submission = await createSubmissionFromSubmissionResource(req.params.uuid);
-    if (submission)
-      await processSubmission(submission);
+    if (submission) await processSubmission(submission);
 
     return res.status(204).send();
   } catch (e) {
@@ -65,16 +66,14 @@ async function processInsertions(delta) {
   let inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_SENT_STATUS)));
   for (let triple of inserts) {
     const submission = await createSubmissionFromSubmission(triple.subject.value);
-    if (submission)
-      submissions.push(submission);
+    if (submission) submissions.push(submission);
   }
 
   // get submissions for submission-task URIs
   inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_TASK_SUCCESSFUL)));
-  for (let triple of inserts) {
+  for (const triple of inserts) {
     const submission = await createSubmissionFromSubmissionTask(triple.subject.value);
-    if (submission)
-      submissions.push(submission);
+    if (submission) submissions.push(submission);
   }
 
   if (submissions.length) {
@@ -84,7 +83,7 @@ async function processInsertions(delta) {
 }
 
 async function processSubmissions(submissions) {
-  for (let submission of submissions) {
+  for (const submission of submissions) {
     try {
       await processSubmission(submission);
     } catch (e) {
@@ -100,9 +99,9 @@ async function processSubmission(submission) {
 }
 
 async function processDeletions(delta) {
-  let deletions = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_DELETED_STATUS)));
+  const deletions = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_DELETED_STATUS)));
 
-  for (let triple of deletions) {
+  for (const triple of deletions) {
     try {
       await deleteFormDataFromSubmission(triple.subject.value);
     } catch (e) {
