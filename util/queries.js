@@ -1,5 +1,7 @@
-import {sparqlEscapeUri, sparqlEscapeString} from 'mu';
+import {sparqlEscapeUri, sparqlEscapeString, sparqlEscapeBoolean } from 'mu';
 import {MELDING, PROV} from './namespaces';
+
+const STATUS_SEND_CONCEPT = "http://lblod.data.gift/concepts/9bd8d86d-bb10-4456-a84e-91e9507c374c"
 
 // TODO can this usage of queries be improved?
 
@@ -50,10 +52,19 @@ WHERE {
 }
 
 export function insertFormDataQuery({uri, uuid, submission, properties}) {
+    let statusSendTriple;
+
+    if(submission.isStatusSend) {
+      statusSendTriple = `
+       ${sparqlEscapeUri(uri)} ext:formSubmissionStatus ${sparqlEscapeUri(STATUS_SEND_CONCEPT)}.
+      `
+    }
+
     return `
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 PREFIX meb: <http://rdf.myexperiment.org/ontologies/base/>
+PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
 
 INSERT {
   GRAPH ?g {
@@ -62,6 +73,7 @@ INSERT {
     ${(properties.map(property => property.toNT(uri)).join('\n    '))}
     ${sparqlEscapeUri(uri)} ${sparqlEscapeUri(PROV('hadPrimarySource').value)} ${sparqlEscapeUri(submission.ttl.uri)} .
     ${sparqlEscapeUri(submission.uri)} ${sparqlEscapeUri(PROV('generated').value)} ${sparqlEscapeUri(uri)} .
+    ${statusSendTriple || ""}
   }
 } WHERE {
   GRAPH ?g {
@@ -128,4 +140,12 @@ WHERE {
   ?concept <http://www.w3.org/2004/02/skos/core#inScheme> ${sparqlEscapeUri(uri)}
 }
 `
+}
+
+export function askSubmissionSendStatus(submissionUri) {
+  return `
+    ASK {
+      ${sparqlEscapeUri(submissionUri)} <http://www.w3.org/ns/adms#status> ${sparqlEscapeUri(STATUS_SEND_CONCEPT)}
+    }
+  `
 }
