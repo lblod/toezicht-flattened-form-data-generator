@@ -1,4 +1,4 @@
-import {Namespace} from 'rdflib';
+import { Namespace } from 'rdflib';
 
 export const ELI = Namespace('http://data.europa.eu/eli/ontology#');
 export const RDF = Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
