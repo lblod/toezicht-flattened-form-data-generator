@@ -8,47 +8,53 @@ const STATUS_SEND_CONCEPT = "http://lblod.data.gift/concepts/9bd8d86d-bb10-4456-
 export function createSubmissionForQuery(uri) {
   return `
 PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
 
-SELECT ?submission ?ttlFileURI ?submittedResourceURI
+SELECT ?submission ?logicalFile ?physicalFile ?submittedDocument
 WHERE {
   BIND (${sparqlEscapeUri(uri)} as ?submission)
-  ?submission dct:subject ?submittedResourceURI .
-  ?submittedResourceURI dct:source ?ttlFileURI .
-  ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
+  ?submission dct:subject ?submittedDocument .
+  ?submittedDocument dct:source ?logicalFile .
+  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
+  ?physicalFile nie:dataSource ?logicalFile .
 } LIMIT 1`;
 }
 
 export function createSubmissionFromSubmittedResourceQuery(uuid) {
   return `
 PREFIX dct: <http://purl.org/dc/terms/>
-PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
+PREFIX mu:  <http://mu.semte.ch/vocabularies/core/>
+PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
 
-SELECT ?submission ?ttlFileURI ?submittedResourceURI
+SELECT ?submission ?logicalFile ?physicalFile ?submittedDocument
 WHERE {
-  ?submittedResourceURI mu:uuid ${sparqlEscapeString(uuid)} .
-  ?submission dct:subject ?submittedResourceURI .
-  ?submittedResourceURI dct:source ?ttlFileURI .
-  ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
+  ?submittedDocument mu:uuid ${sparqlEscapeString(uuid)} .
+  ?submission dct:subject ?submittedDocument .
+  ?submittedDocument dct:source ?logicalFile .
+  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
+  ?physicalFile nie:dataSource ?logicalFile .
 } LIMIT 1`;
 }
 
 // TODO ask about the dct:type of file.
 export function createSubmissionFromAutoSubmissionTaskQuery(uri) {
   return `
-PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX dct:  <http://purl.org/dc/terms/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX adms: <http://www.w3.org/ns/adms#>
-PREFIX melding: <http://lblod.data.gift/vocabularies/automatische-melding/>
+PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
+PREFIX nie:  <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
 
-SELECT ?submission ?ttlFileURI ?submittedResourceURI
+SELECT ?submission ?logicalFile ?physicalFile ?submittedDocument
 WHERE {
   ${sparqlEscapeUri(uri)}
-    a melding:AutomaticSubmissionTask ;
-    prov:generated ?submission ;
-    adms:status <http://lblod.data.gift/automatische-melding-statuses/successful-concept> .
-  ?submission dct:subject ?submittedResourceURI .
-  ?submittedResourceURI dct:source ?ttlFileURI .
-  ?ttlFileURI dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
+    a task:Task ;
+    dct:isPartOf ?job .
+  ?job prov:generated ?submission .
+  ?submission dct:subject ?submittedDocument .
+  ?submittedDocument dct:source ?logicalFile .
+  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
+  ?physicalFile nie:dataSource ?logicalFile .
 } LIMIT 1`;
 }
 

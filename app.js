@@ -2,17 +2,17 @@ import { NamedNode, triple } from 'rdflib';
 import bodyParser from 'body-parser';
 import { app } from 'mu';
 import {
-  createSubmissionFromSubmission,
   createSubmissionFromSubmissionResource,
   createSubmissionFromSubmissionTask,
-  deleteFormDataFromSubmission,
+  createSubmissionFromSubmission,
   SUBMISSION_SENT_STATUS,
-  SUBMISSION_DELETED_STATUS,
-  SUBMISSION_TASK_SUCCESSFUL,
 } from './lib/submission';
 import { FormData } from './lib/form-data';
-import { ADMS } from './util/namespaces';
+import { TASK, ADMS } from './util/namespaces';
 import { Delta } from './lib/delta';
+import * as env from './env.js';
+import { updateTaskStatus } from './lib/submission-task.js';
+import { saveError } from './lib/submission-error.js';
 
 app.use(
   bodyParser.json({
@@ -26,21 +26,81 @@ app.get('/', function (req, res) {
   res.send('Hello toezicht-flattened-form-data-generator');
 });
 
-app.post('/delta', async function (req, res) {
-  const delta = new Delta(req.body);
+app.post('/automatic/delta', async function (req, res) {
+  //We can already send a 200 back. The delta-notifier does not care about the result, as long as the request is closed.
+  res.status(200).send();
 
-  if (!delta.inserts.length) {
-    console.log('Delta does not contain any insertions. Nothing should happen.');
-    return res.status(204).send();
+  try {
+    const delta = new Delta(req.body);
+
+    //Collect the triples about that form-data-generate operation of a task
+    const relevantTaskTriples = delta.getInsertsFor(
+      triple(
+        undefined,
+        TASK('operation'),
+        new NamedNode(env.FORM_DATA_GENERATE_OPERATION)
+      )
+    );
+
+    for (const triple of relevantTaskTriples) {
+      const taskUri = triple.subject.value;
+      try {
+        await updateTaskStatus(taskUri, env.TASK_ONGOING_STATUS);
+
+        const submission = await createSubmissionFromSubmissionTask(taskUri);
+        await processSubmission(submission);
+
+        await updateTaskStatus(taskUri, env.TASK_SUCCESS_STATUS);
+      } catch (error) {
+        const message = `Something went wrong while generating form data for task ${taskUri}`;
+        console.error(`${message}\n`, error.message);
+        console.error(error);
+        const errorUri = await saveError({ message, detail: error.message });
+        await updateTaskStatus(taskUri, env.TASK_FAILURE_STATUS, errorUri);
+      }
+    }
+
+    //Deletions will never get here. The delta-notifier was set up to only forward SENT and CONCEPT submission.
+    //Is this a relic from the past?
+    //const deletions = await processDeletions(delta);
+  } catch (error) {
+    const message =
+      'The task for generating form data for a submission could not even be started or finished due to an unexpected problem.';
+    console.error(`${message}\n`, error.message);
+    console.error(error);
+    await saveError({ message, detail: error.message });
   }
+});
 
-  const submissions = await processInsertions(delta);
-  const deletions = await processDeletions(delta);
+app.post('/manual/delta', async function (req, res) {
+  //We can already send a 200 back. The delta-notifier does not care about the result, as long as the request is closed.
+  res.status(200).send();
 
-  if (!submissions && !deletions) {
-    return res.status(204).send();
-  } else {
-    return res.status(200).send();
+  try {
+    const delta = new Delta(req.body);
+
+    //Collect the triples about a submission that is sent
+    const relevantSubmissionTriples = delta.getInsertsFor(
+      triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_SENT_STATUS))
+    );
+    for (const triple of relevantSubmissionTriples) {
+      const submissionUri = triple.subject.value;
+      try {
+        const submission = createSubmissionFromSubmission(submissionUri);
+        await processSubmission(submission);
+      } catch (error) {
+        const message = `Something went wrong while generating form data for submission ${submissionUri}`;
+        console.error(`${message}\n`, error.message);
+        console.error(error);
+        await saveError({ message, detail: error.message });
+      }
+    }
+  } catch (error) {
+    const message =
+      'Unable to process the flattening for this submission due to an unexpected problem.';
+    console.error(`${message}\n`, error.message);
+    console.error(error);
+    await saveError({ message, detail: error.message });
   }
 });
 
@@ -58,57 +118,7 @@ app.put('/submission-documents/:uuid/flatten', async function (req, res) {
   }
 });
 
-async function processInsertions(delta) {
-  // TODO make it more easy to add new triggers <=> creation strategies.
-  let submissions = [];
-
-  // get submissions for submission URIs
-  let inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_SENT_STATUS)));
-  for (let triple of inserts) {
-    const submission = await createSubmissionFromSubmission(triple.subject.value);
-    if (submission) submissions.push(submission);
-  }
-
-  // get submissions for submission-task URIs
-  inserts = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_TASK_SUCCESSFUL)));
-  for (const triple of inserts) {
-    const submission = await createSubmissionFromSubmissionTask(triple.subject.value);
-    if (submission) submissions.push(submission);
-  }
-
-  if (submissions.length) {
-    processSubmissions(submissions); // don't await async processing
-  }
-  return submissions;
-}
-
-async function processSubmissions(submissions) {
-  for (const submission of submissions) {
-    try {
-      await processSubmission(submission);
-    } catch (e) {
-      console.log('Something went wrong while trying to extract the form-data from the submissions');
-      console.log(`Exception: ${e.stack}`);
-    }
-  }
-}
-
 async function processSubmission(submission) {
   const form = new FormData({ submission });
   await form.flatten();
-}
-
-async function processDeletions(delta) {
-  const deletions = delta.getInsertsFor(triple(undefined, ADMS('status'), new NamedNode(SUBMISSION_DELETED_STATUS)));
-
-  for (const triple of deletions) {
-    try {
-      await deleteFormDataFromSubmission(triple.subject.value);
-    } catch (e) {
-      console.log('Something went wrong while trying to delete the form data');
-      console.log(`Exception: ${e.stack}`);
-    }
-  }
-
-  return deletions;
 }
