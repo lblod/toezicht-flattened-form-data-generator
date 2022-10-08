@@ -16,5 +16,6 @@ export const MELDING = Namespace(
 );
 export const PROV = Namespace('http://www.w3.org/ns/prov#');
 export const ADMS = Namespace('http://www.w3.org/ns/adms#');
+export const SKOS = Namespace('http://www.w3.org/2004/02/skos/core#');
 export const XSD = Namespace('http://www.w3.org/2001/XMLSchema#');
 export const TASK = Namespace('http://redpencil.data.gift/vocabularies/tasks/');

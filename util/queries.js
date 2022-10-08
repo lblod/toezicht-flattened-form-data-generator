@@ -1,5 +1,5 @@
-import { MELDING, PROV } from './namespaces';
 import { sparqlEscapeUri, sparqlEscapeString } from 'mu';
+import { MELDING, PROV, ADMS, SKOS } from './namespaces';
 
 const STATUS_SEND_CONCEPT =
   'http://lblod.data.gift/concepts/9bd8d86d-bb10-4456-a84e-91e9507c374c';
@@ -157,14 +157,17 @@ export function retrieveCodeListQuery(uri) {
     SELECT ?concept
     WHERE {
       ?concept
-        <http://www.w3.org/2004/02/skos/core#inScheme> ${sparqlEscapeUri(uri)}
+        ${sparqlEscapeUri(SKOS('inScheme').value)}
+          ${sparqlEscapeUri(uri)}
     }`;
 }
 
 export function askSubmissionSendStatus(submissionUri) {
   return `
     ASK {
-      ${sparqlEscapeUri(submissionUri)} <http://www.w3.org/ns/adms#status> ${sparqlEscapeUri(STATUS_SEND_CONCEPT)}
+      ${sparqlEscapeUri(submissionUri)}
+        ${sparqlEscapeUri(ADMS('status').value)}
+          ${sparqlEscapeUri(STATUS_SEND_CONCEPT)} .
     }
   `;
 }
