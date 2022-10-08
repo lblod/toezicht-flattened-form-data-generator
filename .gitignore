@@ -1,2 +1,14 @@
-.idea
-node_modules
+# -*- mode: gitignore; -*-
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+node_modules/
+.log/
+
+# Linting
+/.eslintcache
