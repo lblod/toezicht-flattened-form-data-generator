@@ -86,7 +86,7 @@ app.post('/manual/delta', async function (req, res) {
     for (const triple of relevantSubmissionTriples) {
       const submissionUri = triple.subject.value;
       try {
-        const submission = createSubmissionFromSubmission(submissionUri);
+        const submission = await createSubmissionFromSubmission(submissionUri);
         await processSubmission(submission);
       } catch (error) {
         const message = `Something went wrong while generating form data for submission ${submissionUri}`;
