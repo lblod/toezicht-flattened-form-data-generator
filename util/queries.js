@@ -9,11 +9,15 @@ export function createSubmissionForQuery(uri) {
   return `
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 
-SELECT ?submission ?logicalFile ?physicalFile ?submittedDocument
+SELECT ?submission ?logicalFile ?physicalFile ?submittedDocument ?organisationId
 WHERE {
   BIND (${sparqlEscapeUri(uri)} as ?submission)
-  ?submission dct:subject ?submittedDocument .
+  ?submission dct:subject ?submittedDocument ;
+    pav:createdBy ?bestuurseenheid .
+  ?bestuurseenheid mu:uuid ?organisationId .
   ?submittedDocument dct:source ?logicalFile .
   ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
   ?physicalFile nie:dataSource ?logicalFile .
@@ -25,11 +29,14 @@ export function createSubmissionFromSubmittedResourceQuery(uuid) {
 PREFIX dct: <http://purl.org/dc/terms/>
 PREFIX mu:  <http://mu.semte.ch/vocabularies/core/>
 PREFIX nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
+PREFIX pav: <http://purl.org/pav/>
 
-SELECT ?submission ?logicalFile ?physicalFile ?submittedDocument
+SELECT ?submission ?logicalFile ?physicalFile ?submittedDocument ?organisationId
 WHERE {
   ?submittedDocument mu:uuid ${sparqlEscapeString(uuid)} .
-  ?submission dct:subject ?submittedDocument .
+  ?submission dct:subject ?submittedDocument ;
+    pav:createdBy ?bestuurseenheid .
+  ?bestuurseenheid mu:uuid ?organisationId .
   ?submittedDocument dct:source ?logicalFile .
   ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
   ?physicalFile nie:dataSource ?logicalFile .
@@ -44,14 +51,18 @@ PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX adms: <http://www.w3.org/ns/adms#>
 PREFIX task: <http://redpencil.data.gift/vocabularies/tasks/>
 PREFIX nie:  <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#>
+PREFIX pav: <http://purl.org/pav/>
+PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 
-SELECT ?submission ?logicalFile ?physicalFile ?submittedDocument
+SELECT ?submission ?logicalFile ?physicalFile ?submittedDocument ?organisationId
 WHERE {
   ${sparqlEscapeUri(uri)}
     a task:Task ;
     dct:isPartOf ?job .
   ?job prov:generated ?submission .
-  ?submission dct:subject ?submittedDocument .
+  ?submission dct:subject ?submittedDocument ;
+    pav:createdBy ?bestuurseenheid .
+  ?bestuurseenheid mu:uuid ?organisationId .
   ?submittedDocument dct:source ?logicalFile .
   ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
   ?physicalFile nie:dataSource ?logicalFile .
@@ -74,7 +85,7 @@ PREFIX meb: <http://rdf.myexperiment.org/ontologies/base/>
 PREFIX ext: <http://mu.semte.ch/vocabularies/ext/>
 
 INSERT {
-  GRAPH ?g {
+  GRAPH ${sparqlEscapeUri(submission.graph)} {
     ${sparqlEscapeUri(uri)} a ${sparqlEscapeUri(MELDING('FormData').value)} .
     ${sparqlEscapeUri(uri)} mu:uuid ${sparqlEscapeString(uuid)} .
     ${properties.map((property) => property.toNT(uri)).join('\n    ')}
@@ -83,13 +94,13 @@ INSERT {
     ${statusSendTriple || ""}
   }
 } WHERE {
-  GRAPH ?g {
+  GRAPH ${sparqlEscapeUri(submission.graph)} {
     ${sparqlEscapeUri(submission.uri)} a meb:Submission .
   }
 }`;
 }
 
-export function completeFormDataFromSubmissionQuery(uri) {
+export function completeFormDataFromSubmissionQuery(submission) {
   return `
 PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 PREFIX meb: <http://rdf.myexperiment.org/ontologies/base/>
@@ -98,43 +109,44 @@ PREFIX melding: <http://lblod.data.gift/vocabularies/automatische-melding/>
 
 SELECT DISTINCT ?formDataURI ?formDataUUID
 WHERE {
-  ${sparqlEscapeUri(uri)}
-    a meb:Submission ;
-    prov:generated ?formDataURI .
-  ?formDataURI
-    a melding:FormData ;
-    mu:uuid ?formDataUUID.
+  GRAPH ${sparqlEscapeUri(submission.graph)} {
+    ${sparqlEscapeUri(submission.uri)}
+      a meb:Submission ;
+      prov:generated ?formDataURI .
+    ?formDataURI
+      a melding:FormData ;
+      mu:uuid ?formDataUUID.
+  }
 } LIMIT 1`;
 }
 
-export function deleteFormDataQuery(uri) {
+export function deleteFormDataQuery(uri, graph) {
   return `
 PREFIX melding: <http://lblod.data.gift/vocabularies/automatische-melding/>
 
 DELETE WHERE {
-  GRAPH ?g {
-  ${sparqlEscapeUri(uri)}
-    a melding:FormData ;
-    ?predicate ?object .
+  GRAPH ${sparqlEscapeUri(graph)} {
+    ${sparqlEscapeUri(uri)}
+      a melding:FormData ;
+      ?predicate ?object .
   }
 }`;
 }
 
-export function deleteFormDataFromSubmissionQuery(uri) {
+export function deleteFormDataFromSubmissionQuery(uri, graph) {
   return `
-PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 PREFIX meb: <http://rdf.myexperiment.org/ontologies/base/>
 PREFIX prov: <http://www.w3.org/ns/prov#>
 PREFIX melding: <http://lblod.data.gift/vocabularies/automatische-melding/>
 
 DELETE {
-  GRAPH ?g {
+  GRAPH ${sparqlEscapeUri(graph)} {
     ${sparqlEscapeUri(uri)} prov:generated ?formData .
     ?formData ?p ?o .
   }
 }
 WHERE {
-  GRAPH ?g {
+  GRAPH ${sparqlEscapeUri(graph)} {
     ${sparqlEscapeUri(uri)}
       a meb:Submission ;
       prov:generated ?formData .
