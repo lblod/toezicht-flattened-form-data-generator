@@ -11,8 +11,9 @@ import { FormData } from './lib/form-data';
 import { TASK, ADMS } from './util/namespaces';
 import { Delta } from './lib/delta';
 import * as env from './env.js';
-import { updateTaskStatus } from './lib/submission-task.js';
+import { updateTaskStatus, getOrganisationIdFromTask } from './lib/submission-task.js';
 import { saveError } from './lib/submission-error.js';
+import * as config from './config';
 
 app.use(
   bodyParser.json({
@@ -45,18 +46,22 @@ app.post('/automatic/delta', async function (req, res) {
     for (const triple of relevantTaskTriples) {
       const taskUri = triple.subject.value;
       try {
-        await updateTaskStatus(taskUri, env.TASK_ONGOING_STATUS);
+        const organisationId = await getOrganisationIdFromTask(taskUri);
+        const submissionGraph = config.GRAPH_TEMPLATE.replace('~ORGANIZATION_ID~', organisationId);
+        await updateTaskStatus(taskUri, env.TASK_ONGOING_STATUS, undefined, submissionGraph);
 
         const submission = await createSubmissionFromSubmissionTask(taskUri);
         await processSubmission(submission);
 
-        await updateTaskStatus(taskUri, env.TASK_SUCCESS_STATUS);
+        await updateTaskStatus(taskUri, env.TASK_SUCCESS_STATUS, undefined, submissionGraph);
       } catch (error) {
         const message = `Something went wrong while generating form data for task ${taskUri}`;
         console.error(`${message}\n`, error.message);
         console.error(error);
         const errorUri = await saveError({ message, detail: error.message });
-        await updateTaskStatus(taskUri, env.TASK_FAILURE_STATUS, errorUri);
+        const organisationId = await getOrganisationIdFromTask(taskUri);
+        const submissionGraph = config.GRAPH_TEMPLATE.replace('~ORGANIZATION_ID~', organisationId);
+        await updateTaskStatus(taskUri, env.TASK_FAILURE_STATUS, errorUri, submissionGraph);
       }
     }
 
