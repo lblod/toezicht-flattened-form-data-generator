@@ -14,9 +14,9 @@ SELECT ?submission ?logicalFile ?physicalFile ?submittedDocument
 WHERE {
   BIND (${sparqlEscapeUri(uri)} as ?submission)
   ?submission dct:subject ?submittedDocument .
-  ?submittedDocument dct:source ?logicalFile .
-  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
+  ?submittedDocument dct:source ?physicalFile .
   ?physicalFile nie:dataSource ?logicalFile .
+  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
 } LIMIT 1`;
 }
 
@@ -30,9 +30,9 @@ SELECT ?submission ?logicalFile ?physicalFile ?submittedDocument
 WHERE {
   ?submittedDocument mu:uuid ${sparqlEscapeString(uuid)} .
   ?submission dct:subject ?submittedDocument .
-  ?submittedDocument dct:source ?logicalFile .
-  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
+  ?submittedDocument dct:source ?physicalFile .
   ?physicalFile nie:dataSource ?logicalFile .
+  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
 } LIMIT 1`;
 }
 
@@ -52,9 +52,9 @@ WHERE {
     dct:isPartOf ?job .
   ?job prov:generated ?submission .
   ?submission dct:subject ?submittedDocument .
-  ?submittedDocument dct:source ?logicalFile .
-  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
+  ?submittedDocument dct:source ?physicalFile .
   ?physicalFile nie:dataSource ?logicalFile .
+  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
 } LIMIT 1`;
 }
 
