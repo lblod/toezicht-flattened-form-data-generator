@@ -18,9 +18,9 @@ WHERE {
   ?submission dct:subject ?submittedDocument ;
     pav:createdBy ?bestuurseenheid .
   ?bestuurseenheid mu:uuid ?organisationId .
-  ?submittedDocument dct:source ?logicalFile .
-  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
+  ?submittedDocument dct:source ?physicalFile .
   ?physicalFile nie:dataSource ?logicalFile .
+  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
 } LIMIT 1`;
 }
 
@@ -37,9 +37,9 @@ WHERE {
   ?submission dct:subject ?submittedDocument ;
     pav:createdBy ?bestuurseenheid .
   ?bestuurseenheid mu:uuid ?organisationId .
-  ?submittedDocument dct:source ?logicalFile .
-  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
+  ?submittedDocument dct:source ?physicalFile .
   ?physicalFile nie:dataSource ?logicalFile .
+  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
 } LIMIT 1`;
 }
 
@@ -63,9 +63,9 @@ WHERE {
   ?submission dct:subject ?submittedDocument ;
     pav:createdBy ?bestuurseenheid .
   ?bestuurseenheid mu:uuid ?organisationId .
-  ?submittedDocument dct:source ?logicalFile .
-  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
+  ?submittedDocument dct:source ?physicalFile .
   ?physicalFile nie:dataSource ?logicalFile .
+  ?logicalFile dct:type <http://data.lblod.gift/concepts/form-data-file-type> .
 } LIMIT 1`;
 }
 
