@@ -1,6 +1,6 @@
 {
   "name": "toezicht-flattened-form-data-generator",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "Microservice to save submitted submissions to the triple store.",
   "repository": {
     "type": "",
