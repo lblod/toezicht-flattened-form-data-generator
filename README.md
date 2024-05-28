@@ -82,6 +82,7 @@ Currently, this service will also extract `besluit:Artikel` information provided
 
 ```
 It's important to consider how we want to evolve this service. The point is that more and more information included in the `besluit:Besluit` is information we want to act upon.
+Note: We extract only white-listed predicates, to be safe. This mainly to cover the 'cross-referencing' use case.
 
 ## Related services
 The following services are also involved in the automatic processing of a submission:
