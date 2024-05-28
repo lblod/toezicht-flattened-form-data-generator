@@ -69,9 +69,10 @@ A `melding:FormData` resource is generated based on the data found in the TTL fi
 | ext:taxType                       | rdf:type (that is part of the tax-type concept-scheme)            |
 
 ### Extra mappings
-This service has been extended to do more than the name would suggest. It now extracts information from the form-data.ttl file and 'flattens' it, mapping the extracted information onto one resource. Perhaps, we should reconsider the name of this service from "toezicht-flattend-form-data-generator" to something more general, such as "toezicht-form-data-extractor".
-
-Currently, this service will also extract `besluit:Artikel` information provided in the `form-data.ttl` and attach it to `besluit:Besluit` in the dataset. This should look like the following:
+Previoulsy this service extracted information from the `form-data.ttl` file and 'flattened' it, mapping the extracted information onto one resource.
+Now, this service has been extended to do more than the name would suggest.
+It will also extract `besluit:Artikel` information provided in the `form-data.ttl` and attach it to `besluit:Besluit` in the dataset.
+This newly extracted data should look like the following:
 
 ```turtle
 <http://submission> a <http://rdf.myexperiment.org/ontologies/base/Submission>;
@@ -81,6 +82,7 @@ Currently, this service will also extract `besluit:Artikel` information provided
 <http://artikel> a besluit:Artikel.
 
 ```
+Perhaps, we should reconsider the name of this service from "toezicht-flattend-form-data-generator" to something more general, such as "toezicht-form-data-extractor".
 It's important to consider how we want to evolve this service. The point is that more and more information included in the `besluit:Besluit` is information we want to act upon.
 Note: We extract only white-listed predicates, to be safe. This mainly to cover the 'cross-referencing' use case.
 Note 2: probably once we migrate to forms-v2 a lot of these intermediate steps are going to be simplified a lot.
