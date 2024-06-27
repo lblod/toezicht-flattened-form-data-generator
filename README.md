@@ -68,6 +68,25 @@ A `melding:FormData` resource is generated based on the data found in the TTL fi
 | ext:regulationType                | rdf:type (that is part of the regulation-type concept-scheme)     |
 | ext:taxType                       | rdf:type (that is part of the tax-type concept-scheme)            |
 
+### Extra mappings
+Previoulsy this service extracted information from the `form-data.ttl` file and 'flattened' it, mapping the extracted information onto one resource.
+Now, this service has been extended to do more than the name would suggest.
+It will also extract `besluit:Artikel` information provided in the `form-data.ttl` and attach it to `besluit:Besluit` in the dataset.
+This newly extracted data should look like the following:
+
+```turtle
+<http://submission> a <http://rdf.myexperiment.org/ontologies/base/Submission>;
+  dcterms:subject <http://besluit>.
+
+<http://besluit> <http://data.europa.eu/eli/ontology#has_part> <http://artikel>.
+<http://artikel> a besluit:Artikel.
+
+```
+Perhaps, we should reconsider the name of this service from "toezicht-flattend-form-data-generator" to something more general, such as "toezicht-form-data-extractor".
+It's important to consider how we want to evolve this service. The point is that more and more information included in the `besluit:Besluit` is information we want to act upon.
+Note: We extract only white-listed predicates, to be safe. This mainly to cover the 'cross-referencing' use case.
+Note 2: probably once we migrate to forms-v2 a lot of these intermediate steps are going to be simplified a lot.
+
 ## Related services
 The following services are also involved in the automatic processing of a submission:
 * [automatic-submission-service](https://github.com/lblod/automatic-submission-service)
